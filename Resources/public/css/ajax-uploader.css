@@ -1,0 +1,78 @@
+.afb_file_container .afb_holder {
+    width: 100%;
+    border: dashed 1px #acacac;
+    min-height: 80px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 80px;
+}
+
+.afb_file_container .afb_holder.hover {
+    border-color: #000;
+    cursor: copy;
+}
+
+.afb_file_container ul.afb_upload_preview, .afb_file_container ul.afb_upload_progress {
+    margin: 20px 0px 0px 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.afb_file_container ul.afb_upload_progress li {
+    display: block;
+}
+
+.afb_file_container ul.afb_upload_progress li {
+    width: 100%;
+    display: table;
+    margin-bottom: 20px;
+}
+
+.afb_file_container ul.afb_upload_progress li > div {
+    display: table-cell;
+    height: 30px;
+    vertical-align: middle;
+}
+
+.afb_file_container ul.afb_upload_progress li > div.afb_filename {
+    width: 30%;
+}
+
+.afb_file_container ul.afb_upload_progress li > div.afb_file_progress > div {
+    width: 0%;
+    height: 100%;
+    background: blue;
+}
+
+.afb_file_container ul.afb_upload_progress li > div.afb_remove_file {
+    text-align: center;
+    width: 30px;
+}
+
+.afb_file_container .afb_upload_preview {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+}
+
+.afb_file_container .afb_upload_preview li {
+    display: block;
+    float: left;
+    width: 33%;
+    text-align: center;
+}
+
+.afb_file_container .afb_upload_preview li > div {
+    margin-bottom: 20px;
+}
+
+.afb_file_container .afb_upload_preview li img {
+    width: 100%;
+    height: auto;
+}
+
+.afb_file_container .afb_remove_file a {
+    cursor: pointer;
+}
+
+

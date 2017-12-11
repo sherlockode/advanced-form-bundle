@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+
+    Sherlockode\AdvancedFormBundle\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+

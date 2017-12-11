@@ -1,0 +1,56 @@
+{% block afb_file_widget %}
+    <div
+        class="afb_file_container"
+        data-uploadurl="{{ uploadUriPath|e }}"
+        data-removeurl="{{ removeUriPath|e }}"
+        data-field="{{ fieldFile|e }}"
+        data-mapping="{{ mapping|e }}"
+        {% if multiple %}
+            data-multiple="true"
+            data-collection="{{ collection|e }}"
+        {% endif %}
+        {% if subject.id %}
+            data-id="{{ subject.id|e }}"
+        {% endif %}
+        {% if jsCallback %}
+            data-callback="{{ jsCallback|e }}"
+        {% endif %}
+        {% if imageCallback %}
+            data-imgcallback="true"
+        {% endif %}
+    >
+        <div class="afb_holder"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
+            {{ label|trans({}, translation_domain) }}
+        </div>
+        {% set i = 0 %}
+        {% if imageCallback %}
+            <ul class="afb_upload_preview">
+                {% for file in files %}
+                    {% set i = i + 1 %}
+                    <li class="afb_preview_item afb_preview_{{ i }}" data-upload="{{ i }}">
+                        <div class="afb_file_preview">
+                            <img src="{{ vich_uploader_asset(file, fieldFile) }}" />
+                        </div>
+                        <div class="afb_filename">{{ attribute(file, fieldName) }}</div>
+                        <div class="afb_remove_file">
+                            <a data-upload="{{ i }}" data-id="{{ file.id }}">X</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <ul class="afb_upload_progress">
+                {% for file in files %}
+                    {% set i = i + 1 %}
+                    <li class="afb_preview_item afb_preview_0" data-upload="{{ i }}">
+                        <div class="afb_filename">{{ attribute(file, fieldName) }}</div>
+                        <div class="afb_file_progress"><div></div></div>
+                        <div class="afb_remove_file">
+                            <a data-upload="0" data-id="{{ file.id }}">X</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+
+    Sherlockode\AdvancedFormBundle\Manager\:
+        resource: '../../Manager'
+        public: true
+
+    Sherlockode\AdvancedFormBundle\Manager\MappingManager:
+        calls:
+            - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
+
