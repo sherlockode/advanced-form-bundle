@@ -43,15 +43,14 @@ class UploadManager
      * @param UploadedFile $uploadedFile
      * @param string|null  $type
      * @param int|null     $id
-     * @param string|null  $field
      *
      * @throws \Exception
      *
      * @return File
      */
-    public function upload(UploadedFile $uploadedFile, $type = null, $id = null, $field = null)
+    public function upload(UploadedFile $uploadedFile, $type = null, $id = null)
     {
-        if (null !== $type && null !== $id && null !== $field) {
+        if (null !== $type && null !== $id) {
             $entityNamespace = $this->mappingManager->getMappedEntity($type);
             if (null === $entityNamespace) {
                 throw new \Exception(sprintf('Invalid mapping for "%s".', $type));
@@ -60,6 +59,7 @@ class UploadManager
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
+            $field = $this->mappingManager->getFileProperty($type);
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $propertyAccessor->setValue($subject, $field, $uploadedFile);
             $this->uploadHandler->upload($subject, $field);
@@ -75,14 +75,13 @@ class UploadManager
     /**
      * @param string $type
      * @param int    $id
-     * @param string $field
      * @param bool   $deleteObject
      *
      * @throws \Exception
      */
-    public function remove($type, $id, $field, $deleteObject = false)
+    public function remove($type, $id, $deleteObject = false)
     {
-        if (null !== $type && null !== $id && null !== $field) {
+        if (null !== $type && null !== $id) {
             $entity = $this->mappingManager->getMappedEntity($type);
             if (null === $entity) {
                 throw new \Exception(sprintf('Invalid mapping for "%s".', $type));
@@ -91,6 +90,7 @@ class UploadManager
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
+            $field = $this->mappingManager->getFileProperty($type);
             $this->uploadHandler->remove($subject, $field);
             if ($deleteObject) {
                 $this->om->remove($subject);

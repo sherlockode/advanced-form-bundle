@@ -46,9 +46,6 @@
                 if (mapping) {
                     formData.append('afb_upload_temp_file[mapping]', mapping);
                 }
-                if (fieldName) {
-                    formData.append('afb_upload_temp_file[field]', fieldName);
-                }
                 if (subjectId) {
                     if (isMultiple) {
                         // ...
@@ -145,7 +142,6 @@
             function removeFile(pictureId){
                 var formData = new FormData();
                 formData.append('afb_remove_file[mapping]', mapping);
-                formData.append('afb_remove_file[field]', fieldName);
                 if (pictureId) {
                     formData.append('afb_remove_file[id]', pictureId);
                 }

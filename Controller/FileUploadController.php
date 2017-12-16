@@ -32,8 +32,7 @@ class FileUploadController extends Controller
                 $file = $uploadManager->upload(
                     $uploadedFile,
                     $form->get('mapping')->getData(),
-                    $form->get('id')->getData(),
-                    $form->get('field')->getData()
+                    $form->get('id')->getData()
                 );
             } catch (\Exception $e) {
                 throw $e;
@@ -70,7 +69,6 @@ class FileUploadController extends Controller
                 $uploadManager->remove(
                     $form->get('mapping')->getData(),
                     $form->get('id')->getData(),
-                    $form->get('field')->getData(),
                     $form->get('remove')->getData()
                 );
             } catch (\Exception $e) {
