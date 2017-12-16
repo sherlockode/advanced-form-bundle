@@ -3,14 +3,13 @@
 
         return this.each(function(){
             var container = $(this),
-                collection = container.data('collection'),
                 uploadCallback = container.data('callback'),
                 isImgCallback = container.data('imgcallback'),
                 isMultiple = container.data('multiple'),
                 uploadUrl = container.data('uploadurl'),
                 removeUrl = container.data('removeurl'),
                 mapping = container.data('mapping'),
-                fieldName = container.data('field'),
+                formName = container.data('name'),
                 subjectId = container.data('id'),
                 formPrefix = container.closest('form').attr('name'),
                 uploadCounter = (container.find('.afb_preview_item').length > 0) ? container.find('.afb_preview_item').length + 1 : 0;
@@ -109,13 +108,13 @@
             function addHiddenFields(index, data){
                 var fields = [];
                 if (isMultiple) {
-                    fields.push({name: formPrefix + '[' + collection + '][files][' + index + '][pathname]', value: data.pathname});
-                    fields.push({name: formPrefix + '[' + collection + '][files][' + index + '][size]', value: data.size});
-                    fields.push({name: formPrefix + '[' + collection + '][files][' + index + '][mime-type]', value: data['mime-type']});
+                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][pathname]', value: data.pathname});
+                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][size]', value: data.size});
+                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][mime-type]', value: data['mime-type']});
                 } else {
-                    fields.push({name: formPrefix + '[' + fieldName + '][files][pathname]', value: data.pathname});
-                    fields.push({name: formPrefix + '[' + fieldName + '][files][size]', value: data.size});
-                    fields.push({name: formPrefix + '[' + fieldName + '][files][mime-type]', value: data['mime-type']});
+                    fields.push({name: formPrefix + '[' + formName + '][files][pathname]', value: data.pathname});
+                    fields.push({name: formPrefix + '[' + formName + '][files][size]', value: data.size});
+                    fields.push({name: formPrefix + '[' + formName + '][files][mime-type]', value: data['mime-type']});
                 }
                 for (var i = 0; i < fields.length; i++) {
                     container.append($('<input class="afb_upload_' + index + '" type="hidden" name="' + fields[i].name + '" value="' + fields[i].value + '">'));
