@@ -121,7 +121,6 @@ class FileType extends AbstractType
         $view->vars['files'] = [];
 
         if ($options['multiple']) {
-            $view->vars['collection'] = $form->getName();
             $collection = $propertyAccessor->getValue($subject, $form->getName());
             if ($collection instanceof Collection) {
                 foreach ($collection as $media) {

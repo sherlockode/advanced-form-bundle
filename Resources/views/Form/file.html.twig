@@ -3,11 +3,10 @@
         class="afb_file_container"
         data-uploadurl="{{ uploadUriPath|e }}"
         data-removeurl="{{ removeUriPath|e }}"
-        data-field="{{ fieldFile|e }}"
+        data-name="{{ name|e }}"
         data-mapping="{{ mapping|e }}"
         {% if multiple %}
             data-multiple="true"
-            data-collection="{{ collection|e }}"
         {% endif %}
         {% if subject.id %}
             data-id="{{ subject.id|e }}"
