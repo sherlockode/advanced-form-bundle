@@ -22,10 +22,6 @@ class RemoveFileType extends AbstractType
                 TextType::class
             )
             ->add(
-                'field',
-                TextType::class
-            )
-            ->add(
                 'id',
                 IntegerType::class
             )

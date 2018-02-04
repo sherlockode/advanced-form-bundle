@@ -29,13 +29,6 @@ class UploadTempFileType extends AbstractType
                 ]
             )
             ->add(
-                'field',
-                TextType::class,
-                [
-                    'required' => false
-                ]
-            )
-            ->add(
                 'id',
                 IntegerType::class,
                 [
