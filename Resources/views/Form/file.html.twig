@@ -14,15 +14,15 @@
         {% if jsCallback %}
             data-callback="{{ jsCallback|e }}"
         {% endif %}
-        {% if imageCallback %}
-            data-imgcallback="true"
+        {% if imagePreview %}
+            data-imgpreview="true"
         {% endif %}
     >
-        <div class="afb_holder"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
+        <div class="afb_dropzone"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
             {{ label|trans({}, translation_domain) }}
         </div>
         {% set i = 0 %}
-        {% if imageCallback %}
+        {% if imagePreview %}
             <ul class="afb_upload_preview">
                 {% for file in files %}
                     {% set i = i + 1 %}

@@ -278,7 +278,7 @@ class ProductType extends AbstractType
                     'label' => 'Drop files here',
                     'multiple' => true,
                     'mapping' => 'picture',
-                    'js_image_callback' => true,
+                    'image_preview' => true,
                 ]
             );
     }

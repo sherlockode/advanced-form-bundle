@@ -92,7 +92,7 @@ class FileType extends AbstractType
             'js_callback' => null,
             'mapped' => false,
             'compound' => true,
-            'js_image_callback' => false,
+            'image_preview' => false,
         ]);
     }
 
@@ -117,7 +117,7 @@ class FileType extends AbstractType
         $view->vars['fieldName'] = $fileNameProperty;
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];
-        $view->vars['imageCallback'] = $options['js_image_callback'];
+        $view->vars['imagePreview'] = $options['image_preview'];
         $view->vars['files'] = [];
 
         if ($options['multiple']) {

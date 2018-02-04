@@ -235,7 +235,7 @@ class PeopleType extends AbstractType
                 [
                     'label' => 'Drop files here',
                     'mapping' => 'people', // the id of the mapping from config.yml
-                    'js_image_callback' => true,
+                    'image_preview' => true,
                 ]
             );
     }
