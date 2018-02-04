@@ -12,7 +12,7 @@
                 formName = container.data('name'),
                 subjectId = container.data('id'),
                 formPrefix = container.closest('form').attr('name'),
-                uploadCounter = (container.find('.afb_preview_item').length > 0) ? container.find('.afb_preview_item').length + 1 : 0;
+                uploadCounter = (container.find('.afb_item').length > 0) ? container.find('.afb_item').length + 1 : 0;
 
             function onXhrFail(jqXhr){
                 if (jqXhr.status >= 400 && jqXhr.status < 500) {
@@ -57,7 +57,7 @@
                     xhr: function() {
                         xhr.upload.addEventListener("progress", function(evt) {
                             var progression = (evt.loaded * 100) / evt.total;
-                            var listItem = container.find('.afb_upload_progress li.afb_preview_' + uploadId);
+                            var listItem = container.find('.afb_upload_container .afb_preview_' + uploadId);
                             listItem.find('.afb_file_progress > div').css('width', progression + '%');
                         });
                         return xhr;
@@ -76,32 +76,32 @@
             }
 
             function filePreview(uploadId, file){
-                if (isImgCallback && file.type.match('image.*')) {
+                if (isImgPreview && file.type.match('image.*')) {
                     var reader = new FileReader();
-                    reader.onload = (function() {
-                        return function(e) {
+                    reader.onload =
+                        function(e) {
                             var item = $(
-                                '<li class="afb_preview_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
+                                '<li class="afb_item afb_preview_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
                                 '<div class="afb_file_preview">' +
                                 '<img src="' + e.target.result + '" />' +
                                 '</div>' +
-                                '<div class="afb_filename">' + file.name + '</div>' +
-                                '<div class="afb_remove_file"><a data-upload="' + uploadId + '">X</a></div>' +
+                                '<div class="afb_filename upload-details">' + file.name + '</div>' +
+                                '<div class="afb_file_progress upload-details"><div></div></div>' +
+                                '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</>' +
                                 '</li>'
                             );
-                            container.find('.afb_upload_preview').append(item);
+                            container.find('.afb_upload_container').append(item);
                         };
-                    })(file);
                     reader.readAsDataURL(file);
                 } else {
                     var item = $(
-                        '<li class="afb_preview_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
-                        '<div class="afb_filename">' + file.name + '</div>' +
-                        '<div class="afb_file_progress"><div></div></div>' +
-                        '<div class="afb_remove_file"><a data-upload="' + uploadId + '">X</a></div>' +
+                        '<li class="afb_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
+                        '<div class="afb_filename upload-details">' + file.name + '</div>' +
+                        '<div class="afb_file_progress upload-details"><div></div></div>' +
+                        '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
                         '</li>'
                     );
-                    container.find('.afb_upload_progress').append(item);
+                    container.find('.afb_upload_container').append(item);
                 }
             }
 
@@ -125,7 +125,7 @@
                 var uploadId = element.data('upload');
                 container.find('li.afb_preview_' + uploadId).remove();
                 container.find('.afb_upload_' + uploadId).remove();
-                if (!isMultiple && container.find('.afb_preview_item').length <= 0) {
+                if (!isMultiple && container.find('.afb_item').length <= 0) {
                     container.find('.afb_dropzone').show();
                 }
                 if (isMultiple) {
@@ -168,7 +168,7 @@
                 };
             });
 
-            container.find('.afb_upload_progress, .afb_upload_preview').on('click', '.afb_remove_file a', function(event) {
+            container.find('.afb_upload_container').on('click', '.afb_remove_file', function(event) {
                 event.preventDefault();
                 deletePreview($(this));
             });
