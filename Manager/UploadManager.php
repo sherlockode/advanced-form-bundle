@@ -51,11 +51,8 @@ class UploadManager
     public function upload(UploadedFile $uploadedFile, $type = null, $id = null)
     {
         if (null !== $type && null !== $id) {
-            $entityNamespace = $this->mappingManager->getMappedEntity($type);
-            if (null === $entityNamespace) {
-                throw new \Exception(sprintf('Invalid mapping for "%s".', $type));
-            }
-            $subject = $this->om->getRepository($entityNamespace)->find((int)$id);
+            $entityClass = $this->mappingManager->getMappedEntity($type);
+            $subject = $this->om->getRepository($entityClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
@@ -63,7 +60,6 @@ class UploadManager
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $propertyAccessor->setValue($subject, $field, $uploadedFile);
             $this->uploadHandler->upload($subject, $field);
-            $pathname = null;
             $this->om->flush();
 
             return $propertyAccessor->getValue($subject, $field);
@@ -82,11 +78,8 @@ class UploadManager
     public function remove($type, $id, $deleteObject = false)
     {
         if (null !== $type && null !== $id) {
-            $entity = $this->mappingManager->getMappedEntity($type);
-            if (null === $entity) {
-                throw new \Exception(sprintf('Invalid mapping for "%s".', $type));
-            }
-            $subject = $this->om->getRepository($entity)->find((int)$id);
+            $entityClass = $this->mappingManager->getMappedEntity($type);
+            $subject = $this->om->getRepository($entityClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
