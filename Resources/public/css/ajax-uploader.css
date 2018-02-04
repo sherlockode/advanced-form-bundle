@@ -1,4 +1,4 @@
-.afb_file_container .afb_holder {
+.afb_file_container .afb_dropzone {
     width: 100%;
     border: dashed 1px #acacac;
     min-height: 80px;
@@ -7,7 +7,7 @@
     line-height: 80px;
 }
 
-.afb_file_container .afb_holder.hover {
+.afb_file_container .afb_dropzone.hover {
     border-color: #000;
     cursor: copy;
 }

@@ -4,7 +4,7 @@
         return this.each(function(){
             var container = $(this),
                 uploadCallback = container.data('callback'),
-                isImgCallback = container.data('imgcallback'),
+                isImgPreview = container.data('imgpreview'),
                 isMultiple = container.data('multiple'),
                 uploadUrl = container.data('uploadurl'),
                 removeUrl = container.data('removeurl'),
@@ -28,7 +28,7 @@
                     if (files.length > 1) {
                         return alert('You can only upload one file');
                     } else {
-                        container.find('.afb_holder').hide();
+                        container.find('.afb_dropzone').hide();
                     }
                 }
                 for (var i = 0; i < files.length; i++) {
@@ -126,7 +126,7 @@
                 container.find('li.afb_preview_' + uploadId).remove();
                 container.find('.afb_upload_' + uploadId).remove();
                 if (!isMultiple && container.find('.afb_preview_item').length <= 0) {
-                    container.find('.afb_holder').show();
+                    container.find('.afb_dropzone').show();
                 }
                 if (isMultiple) {
                     var pictureId = element.data('id');
@@ -156,7 +156,7 @@
                 }).fail(onXhrFail);
             }
 
-            container.find('.afb_holder').each(function(index, holder) {
+            container.find('.afb_dropzone').each(function(index, holder) {
                 holder.ondragover = function () { $(this).addClass('hover'); return false; };
                 holder.ondragleave = function () { $(this).removeClass('hover'); return false; };
                 holder.ondragend = function () { $(this).removeClass('hover'); return false; };
