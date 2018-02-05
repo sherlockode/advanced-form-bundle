@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -84,16 +85,19 @@ class FileType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired(['mapping']);
+        $resolver->setRequired(['mapping', 'upload_mode']);
         $resolver->setDefaults([
             'upload_uri_path' => $this->urlGenerator->generate('sherlockode_afb_upload'),
             'remove_uri_path' => $this->urlGenerator->generate('sherlockode_afb_remove'),
             'multiple' => false,
             'js_callback' => null,
-            'mapped' => false,
+            'mapped' => function (Options $options) {
+                return $options['upload_mode'] != 'immediate';
+            },
             'compound' => true,
             'image_preview' => false,
         ]);
+        $resolver->setAllowedValues('upload_mode', ['immediate', 'temporary']);
     }
 
     /**
@@ -123,6 +127,7 @@ class FileType extends AbstractType
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];
         $view->vars['imagePreview'] = $options['image_preview'];
+        $view->vars['uploadMode'] = $options['upload_mode'];
         $view->vars['files'] = [];
 
         if ($options['multiple']) {
@@ -167,6 +172,10 @@ class FileType extends AbstractType
                 'files',
                 UploadedFileType::class
             );
+        }
+
+        if ($options['upload_mode'] == 'immediate') {
+            return;
         }
 
         $builder->get('files')->addModelTransformer(new UploadFileTransformer($isMultiple));
