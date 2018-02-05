@@ -3,6 +3,7 @@
 namespace Sherlockode\AdvancedFormBundle\Manager;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
 class AnnotationManager
 {
@@ -10,7 +11,7 @@ class AnnotationManager
      * @param string $entity
      * @param string $property
      *
-     * @return array|null
+     * @return UploadableField|null
      */
     public function getVichAnnotations($entity, $property)
     {
@@ -18,8 +19,7 @@ class AnnotationManager
         $reflectedClass = new \ReflectionClass($entity);
         foreach ($reflectedClass->getProperties() as $p) {
             if ($property == $p->getName()) {
-                $annotations = $annotationReader->getPropertyAnnotations($p);
-                return array_shift($annotations);
+                return $annotationReader->getPropertyAnnotation($p, UploadableField::class);
             }
         }
 
