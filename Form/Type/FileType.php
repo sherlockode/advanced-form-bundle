@@ -106,8 +106,13 @@ class FileType extends AbstractType
         $subject = $form->getParent()->getData();
         $entityNamespace = $this->mappingManager->getMappedEntity($options['mapping']);
         $fileProperty = $this->mappingManager->getFileProperty($options['mapping']);
-        $vichAnnotations = $this->annotationManager->getVichAnnotations($entityNamespace, $fileProperty);
-        $fileNameProperty = $vichAnnotations->getFileNameProperty();
+        $vichAnnotation = $this->annotationManager->getVichAnnotations($entityNamespace, $fileProperty);
+        if ($vichAnnotation) {
+            $fileNameProperty = $vichAnnotation->getFileNameProperty();
+        } else {
+            $fileNameProperty = $fileProperty;
+            $fileProperty = null;
+        }
 
         $view->vars['uploadUriPath'] = $options['upload_uri_path'];
         $view->vars['removeUriPath'] = $options['remove_uri_path'];

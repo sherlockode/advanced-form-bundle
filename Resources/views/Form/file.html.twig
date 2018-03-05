@@ -28,7 +28,9 @@
                     {% set i = i + 1 %}
                     <li class="afb_preview_item afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
                         <div class="afb_file_preview">
+                            {% if fieldFile is not null %}
                             <img src="{{ vich_uploader_asset(file, fieldFile) }}" />
+                            {% endif %}
                         </div>
                         <div class="afb_filename">{{ attribute(file, fieldName) }}</div>
                         <div class="afb_file_progress"><div></div></div>
