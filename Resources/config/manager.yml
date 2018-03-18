@@ -6,6 +6,15 @@ services:
         resource: '../../Manager'
         public: true
 
+    sherlockode_afb.upload_handler.vich:
+        class: Sherlockode\AdvancedFormBundle\UploadHandler\VichUploadHandler
+
+    Sherlockode\AdvancedFormBundle\Manager\UploadManager:
+        arguments:
+            $tmpStorage: '@sherlockode_afb.storage.tmp_storage'
+        calls:
+            - [ addHandler, ['@sherlockode_afb.upload_handler.vich']]
+
     Sherlockode\AdvancedFormBundle\Manager\MappingManager:
         calls:
             - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
