@@ -76,6 +76,9 @@
                     if (uploadCallback && "function" === typeof(window[uploadCallback])) {
                         window[uploadCallback].call(null, response);
                     }
+                    if (response.path && isImgPreview && file.type.match('image.*')) {
+                        $('.afb_preview_' + uploadId).find('img').attr('src', response.path);
+                    }
                     if (uploadMode === 'temporary') {
                         addHiddenFields(uploadId, response);
                     }
