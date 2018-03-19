@@ -5,6 +5,7 @@ namespace Sherlockode\AdvancedFormBundle\Controller;
 use Sherlockode\AdvancedFormBundle\Form\Type\RemoveFileType;
 use Sherlockode\AdvancedFormBundle\Form\Type\UploadTempFileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,14 +16,14 @@ class FileUploadController extends Controller
     /**
      * @Route("/sherlockodeadvancedform/upload", name="sherlockode_afb_upload")
      *
-     * @param Request       $request
-     * @param UploadManager $uploadManager
-     *
-     * @throws \Exception
+     * @param Request        $request
+     * @param UploadManager  $uploadManager
+     * @param MappingManager $mappingManager
      *
      * @return JsonResponse
+     * @throws \Exception
      */
-    public function uploadFileAction(Request $request, UploadManager $uploadManager)
+    public function uploadFileAction(Request $request, UploadManager $uploadManager, MappingManager $mappingManager)
     {
         $form = $this->createForm(UploadTempFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
@@ -38,13 +39,15 @@ class FileUploadController extends Controller
                 throw $e;
             }
 
-            return new JsonResponse(
-                [
-                    'pathname' => $file->getPathname(),
-                    'size' => $uploadedFile->getClientSize(),
-                    'mime-type' => $uploadedFile->getClientMimeType(),
-                ]
-            );
+            $routeInfo = $mappingManager->getRouteProperty($form->get('mapping')->getData());
+            $params = [];
+            foreach ($routeInfo['parameters'] as $key => $parameter) {
+                $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
+            }
+
+            return new JsonResponse([
+                'path' => $this->generateUrl($routeInfo['name'], $params),
+            ]);
         }
 
         throw new \Exception('Invalid form');

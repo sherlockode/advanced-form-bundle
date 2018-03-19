@@ -10,3 +10,7 @@ services:
         calls:
             - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
 
+    sherlockode_afb.twig_extension:
+        class: Sherlockode\AdvancedFormBundle\Twig\Extension\UploaderExtension
+        tags:
+            - { name: twig.extension }

@@ -48,4 +48,13 @@ class MappingManager
 
         return null;
     }
+
+    public function getRouteProperty($type)
+    {
+        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['route'])) {
+            return $this->mapping[$type]['route'];
+        }
+
+        return null;
+    }
 }
