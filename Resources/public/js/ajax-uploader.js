@@ -5,6 +5,7 @@
             var container = $(this),
                 uploadCallback = container.data('callback'),
                 isImgPreview = container.data('imgpreview'),
+                uploadMode = container.data('uploadMode'),
                 isMultiple = container.data('multiple'),
                 uploadUrl = container.data('uploadurl'),
                 removeUrl = container.data('removeurl'),
@@ -53,6 +54,10 @@
                     }
                 }
                 filePreview(uploadId, file);
+                if (uploadMode === 'none') {
+                    return;
+                }
+
                 $.ajax({
                     xhr: function() {
                         xhr.upload.addEventListener("progress", function(evt) {
@@ -71,7 +76,9 @@
                     if (uploadCallback && "function" === typeof(window[uploadCallback])) {
                         window[uploadCallback].call(null, response);
                     }
-                    addHiddenFields(uploadId, response);
+                    if (uploadMode === 'temporary') {
+                        addHiddenFields(uploadId, response);
+                    }
                 }).fail(onXhrFail);
             }
 
@@ -87,7 +94,7 @@
                                 '</div>' +
                                 '<div class="afb_filename upload-details">' + file.name + '</div>' +
                                 '<div class="afb_file_progress upload-details"><div></div></div>' +
-                                '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</>' +
+                                '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
                                 '</li>'
                             );
                             container.find('.afb_upload_container').append(item);
