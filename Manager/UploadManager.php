@@ -3,9 +3,8 @@
 namespace Sherlockode\AdvancedFormBundle\Manager;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Symfony\Component\HttpFoundation\File\File;
+use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Vich\UploaderBundle\Handler\UploadHandler;
 
 class UploadManager
@@ -26,6 +25,11 @@ class UploadManager
     private $mappingManager;
 
     /**
+     * @var UploadHandlerInterface[]
+     */
+    private $handlers = [];
+
+    /**
      * UploadManager constructor.
      *
      * @param ObjectManager  $om
@@ -39,14 +43,17 @@ class UploadManager
         $this->mappingManager = $mappingManager;
     }
 
+    public function addHandler(UploadHandlerInterface $handler)
+    {
+        $this->handlers[] = $handler;
+    }
+
     /**
      * @param UploadedFile $uploadedFile
      * @param string|null  $type
      * @param int|null     $id
      *
      * @throws \Exception
-     *
-     * @return File
      */
     public function upload(UploadedFile $uploadedFile, $type = null, $id = null)
     {
@@ -57,15 +64,18 @@ class UploadManager
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
             $field = $this->mappingManager->getFileProperty($type);
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
-            $propertyAccessor->setValue($subject, $field, $uploadedFile);
-            $this->uploadHandler->upload($subject, $field);
+            foreach ($this->handlers as $handler) {
+                if ($handler->supports($subject, $field)) {
+                    $handler->upload($subject, $field, $uploadedFile);
+                    break;
+                }
+            }
             $this->om->flush();
 
-            return $propertyAccessor->getValue($subject, $field);
+            return;
         }
 
-        return $uploadedFile->move(sys_get_temp_dir());
+        throw new \Exception('Missing data');
     }
 
     /**
@@ -84,7 +94,12 @@ class UploadManager
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
             $field = $this->mappingManager->getFileProperty($type);
-            $this->uploadHandler->remove($subject, $field);
+            foreach ($this->handlers as $handler) {
+                if ($handler->supports($subject, $field)) {
+                    $handler->remove($subject, $field);
+                    break;
+                }
+            }
             if ($deleteObject) {
                 $this->om->remove($subject);
             }

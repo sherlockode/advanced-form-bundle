@@ -31,6 +31,7 @@ class PropertyUploadHandler implements UploadHandlerInterface
     public function remove($subject, $attribute)
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $this->storage->remove($propertyAccessor->getValue($subject, $attribute));
         $propertyAccessor->setValue($subject, $attribute, null);
     }
 
