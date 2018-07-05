@@ -1,0 +1,7 @@
+sherlockode_afb_upload:
+    path: /sherlockodeadvancedform/upload
+    defaults: { _controller: sherlockode_afb.file_upload.controller:uploadFileAction }
+
+sherlockode_afb_remove:
+    path: /sherlockodeadvancedform/remove
+    defaults: { _controller: sherlockode_afb.file_upload.controller:removeFileAction }

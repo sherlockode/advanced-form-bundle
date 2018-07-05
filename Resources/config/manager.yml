@@ -2,22 +2,26 @@ services:
     _defaults:
         autowire: true
 
-    Sherlockode\AdvancedFormBundle\Manager\:
-        resource: '../../Manager'
-        public: true
-
     sherlockode_afb.upload_handler.vich:
         class: Sherlockode\AdvancedFormBundle\UploadHandler\VichUploadHandler
 
-    Sherlockode\AdvancedFormBundle\Manager\UploadManager:
+    sherlockode_afb.upload_manager:
+        class: Sherlockode\AdvancedFormBundle\Manager\UploadManager
         calls:
             - [ addHandler, ['@sherlockode_afb.upload_handler.vich']]
 
-    Sherlockode\AdvancedFormBundle\Manager\MappingManager:
+    sherlockode_afb.annotation_manager:
+        class: Sherlockode\AdvancedFormBundle\Manager\AnnotationManager
+
+    sherlockode_afb.mapping_manager:
+        class: Sherlockode\AdvancedFormBundle\Manager\MappingManager
         calls:
             - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
 
     sherlockode_afb.twig_extension:
         class: Sherlockode\AdvancedFormBundle\Twig\Extension\UploaderExtension
+        arguments:
+            - '@router'
+            - '@sherlockode_afb.mapping_manager'
         tags:
             - { name: twig.extension }

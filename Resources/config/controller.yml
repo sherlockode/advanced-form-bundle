@@ -1,9 +1,6 @@
 services:
-    _defaults:
-        autowire: true
-
-    Sherlockode\AdvancedFormBundle\Controller\:
-        resource: '../../Controller'
-        public: true
-        tags: ['controller.service_arguments']
-
+    sherlockode_afb.file_upload.controller:
+        class: Sherlockode\AdvancedFormBundle\Controller\FileUploadController
+        arguments:
+            - '@sherlockode_afb.upload_manager'
+            - '@sherlockode_afb.mapping_manager'

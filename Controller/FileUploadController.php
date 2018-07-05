@@ -14,23 +14,35 @@ use Symfony\Component\HttpFoundation\Request;
 class FileUploadController extends Controller
 {
     /**
-     * @Route("/sherlockodeadvancedform/upload", name="sherlockode_afb_upload")
-     *
+     * @var UploadManager
+     */
+    private $uploadManager;
+
+    /**
+     * @var MappingManager
+     */
+    private $mappingManager;
+
+    public function __construct($uploadManager, $mappingManager)
+    {
+        $this->uploadManager = $uploadManager;
+        $this->mappingManager = $mappingManager;
+    }
+
+    /**
      * @param Request        $request
-     * @param UploadManager  $uploadManager
-     * @param MappingManager $mappingManager
      *
      * @return JsonResponse
      * @throws \Exception
      */
-    public function uploadFileAction(Request $request, UploadManager $uploadManager, MappingManager $mappingManager)
+    public function uploadFileAction(Request $request)
     {
         $form = $this->createForm(UploadTempFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('file')->getData();
             try {
-                $file = $uploadManager->upload(
+                $this->uploadManager->upload(
                     $uploadedFile,
                     $form->get('mapping')->getData(),
                     $form->get('id')->getData()
@@ -39,7 +51,7 @@ class FileUploadController extends Controller
                 throw $e;
             }
 
-            $routeInfo = $mappingManager->getRouteProperty($form->get('mapping')->getData());
+            $routeInfo = $this->mappingManager->getRouteProperty($form->get('mapping')->getData());
             $params = [];
             foreach ($routeInfo['parameters'] as $key => $parameter) {
                 $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
@@ -57,19 +69,18 @@ class FileUploadController extends Controller
      * @Route("/sherlockodeadvancedform/remove", name="sherlockode_afb_remove")
      *
      * @param Request       $request
-     * @param UploadManager $uploadManager
      *
      * @throws \Exception
      *
      * @return JsonResponse
      */
-    public function removeFileAction(Request $request, UploadManager $uploadManager)
+    public function removeFileAction(Request $request)
     {
         $form = $this->createForm(RemoveFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $uploadManager->remove(
+                $this->uploadManager->remove(
                     $form->get('mapping')->getData(),
                     $form->get('id')->getData(),
                     $form->get('remove')->getData()

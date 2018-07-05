@@ -39,45 +39,15 @@ class FileType extends AbstractType
     private $mappingManager;
 
     /**
-     * @required
-     *
      * @param UrlGeneratorInterface $urlGenerator
-     *
-     * @return $this
+     * @param AnnotationManager     $annotationManager
+     * @param MappingManager        $mappingManager
      */
-    public function setUrlGenerator(UrlGeneratorInterface $urlGenerator)
+    public function __construct(UrlGeneratorInterface $urlGenerator, AnnotationManager $annotationManager, MappingManager $mappingManager)
     {
         $this->urlGenerator = $urlGenerator;
-
-        return $this;
-    }
-
-    /**
-     * @required
-     *
-     * @param AnnotationManager $annotationManager
-     *
-     * @return $this
-     */
-    public function setAnnotationManager(AnnotationManager $annotationManager)
-    {
         $this->annotationManager = $annotationManager;
-
-        return $this;
-    }
-
-    /**
-     * @required
-     *
-     * @param MappingManager $mappingManager
-     *
-     * @return $this
-     */
-    public function setMappingManager(MappingManager $mappingManager)
-    {
         $this->mappingManager = $mappingManager;
-
-        return $this;
     }
 
     /**
