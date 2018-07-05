@@ -16,9 +16,30 @@ class Configuration implements ConfigurationInterface
         $tb = new TreeBuilder();
         $root = $tb->root('sherlockode_advanced_form');
 
+        $this->addStorageSection($root);
         $this->addUploaderSection($root);
 
         return $tb;
+    }
+
+    private function addStorageSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->fixXmlConfig('storage')
+            ->children()
+                ->arrayNode('storages')
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                    ->children()
+                        ->arrayNode('filesystem')
+                            ->children()
+                                ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
     }
 
     /**
@@ -34,6 +55,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('file_property')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('storage')->cannotBeEmpty()->end()
                         ->arrayNode('route')
                             ->children()
                                 ->scalarNode('name')->end()

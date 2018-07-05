@@ -2,8 +2,10 @@
 
 namespace Sherlockode\AdvancedFormBundle\DependencyInjection;
 
+use Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -24,6 +26,29 @@ class SherlockodeAdvancedFormExtension extends Extension
 
         $this->loadServices($container);
         $this->registerFormTheme($container);
+
+        $storages = [];
+        foreach ($config['storages'] as $name => $storage) {
+            $definition = $this->getStorageDefinition($name, $storage);
+            $storages[$name] = $definition;
+            $container->setDefinition(sprintf('sherlockode_afb.%s_storage', $name), $definition);
+        }
+        $definition = $container->getDefinition('sherlockode_afb.upload_handler.property');
+        $definition->setArgument(1, $storages);
+    }
+
+    /**
+     * @param string $name
+     * @param array  $config
+     *
+     * @return Definition
+     */
+    private function getStorageDefinition($name, $config)
+    {
+        if (isset($config['filesystem'])) {
+            return new Definition(FilesystemStorage::class, [$config['filesystem']['path']]);
+        }
+        throw new \LogicException(sprintf('The storage %s is not correctly defined', $name));
     }
 
     /**

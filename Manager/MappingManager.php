@@ -57,4 +57,21 @@ class MappingManager
 
         return null;
     }
+
+    /**
+     * @param object $object
+     * @param string $attribute
+     *
+     * @return string|null
+     */
+    public function getStorage($object, $attribute)
+    {
+        foreach ($this->mapping as $type => $data) {
+            if ($data['class'] == get_class($object) && $data['file_property'] == $attribute) {
+                return $data['storage'] ?? null;
+            }
+        }
+
+        return null;
+    }
 }

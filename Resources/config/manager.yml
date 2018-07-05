@@ -5,10 +5,20 @@ services:
     sherlockode_afb.upload_handler.vich:
         class: Sherlockode\AdvancedFormBundle\UploadHandler\VichUploadHandler
 
+    sherlockode_afb.upload_handler.property:
+        class: Sherlockode\AdvancedFormBundle\UploadHandler\PropertyUploadHandler
+        arguments:
+            - '@sherlockode_afb.mapping_manager'
+            - ~
+
     sherlockode_afb.upload_manager:
         class: Sherlockode\AdvancedFormBundle\Manager\UploadManager
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@sherlockode_afb.mapping_manager'
         calls:
             - [ addHandler, ['@sherlockode_afb.upload_handler.vich']]
+            - [ addHandler, ['@sherlockode_afb.upload_handler.property']]
 
     sherlockode_afb.annotation_manager:
         class: Sherlockode\AdvancedFormBundle\Manager\AnnotationManager

@@ -5,7 +5,6 @@ namespace Sherlockode\AdvancedFormBundle\Manager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Vich\UploaderBundle\Handler\UploadHandler;
 
 class UploadManager
 {
@@ -13,11 +12,6 @@ class UploadManager
      * @var ObjectManager
      */
     private $om;
-
-    /**
-     * @var UploadHandler
-     */
-    private $uploadHandler;
 
     /**
      * @var MappingManager
@@ -32,14 +26,12 @@ class UploadManager
     /**
      * UploadManager constructor.
      *
-     * @param ObjectManager  $om
-     * @param UploadHandler  $uploadHandler
-     * @param MappingManager $mappingManager
+     * @param ObjectManager    $om
+     * @param MappingManager   $mappingManager
      */
-    public function __construct(ObjectManager $om, UploadHandler $uploadHandler, MappingManager $mappingManager)
+    public function __construct(ObjectManager $om, MappingManager $mappingManager)
     {
         $this->om = $om;
-        $this->uploadHandler = $uploadHandler;
         $this->mappingManager = $mappingManager;
     }
 
