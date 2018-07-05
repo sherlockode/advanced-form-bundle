@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('id')
                     ->prototype('array')
                     ->children()
-                        ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('file_property')->isRequired()->cannotBeEmpty()->end()
                         ->arrayNode('route')
                             ->children()

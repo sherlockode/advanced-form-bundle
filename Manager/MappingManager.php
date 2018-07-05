@@ -28,8 +28,8 @@ class MappingManager
      */
     public function getMappedEntity($type)
     {
-        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['entity'])) {
-            return $this->mapping[$type]['entity'];
+        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['class'])) {
+            return $this->mapping[$type]['class'];
         }
 
         return null;
