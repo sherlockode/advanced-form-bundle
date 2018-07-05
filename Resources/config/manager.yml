@@ -10,8 +10,6 @@ services:
         class: Sherlockode\AdvancedFormBundle\UploadHandler\VichUploadHandler
 
     Sherlockode\AdvancedFormBundle\Manager\UploadManager:
-        arguments:
-            $tmpStorage: '@sherlockode_afb.storage.tmp_storage'
         calls:
             - [ addHandler, ['@sherlockode_afb.upload_handler.vich']]
 
