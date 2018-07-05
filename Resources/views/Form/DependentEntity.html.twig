@@ -1,0 +1,9 @@
+{% block dependent_entity_widget %}
+    {{ block('choice_widget') }}
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('#{{ id }}').trigger('dependent_entity_created');
+        });
+    </script>
+{% endblock %}
