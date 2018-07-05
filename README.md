@@ -27,10 +27,10 @@ Enable the bundle in the kernel
 
 public function registerBundles()
 {
-    $bundles = array(
+    $bundles = [
         // ...
         new Sherlockode\AdvancedFormBundle\SherlockodeAdvancedFormBundle(),
-    );
+    ];
 }
 ```
 
@@ -40,8 +40,7 @@ Import the routing in app/config/routing.yml
 
 ``` yaml
 sherlockode_advanced_form:
-    resource: '@SherlockodeAdvancedFormBundle/Controller/'
-    type: annotation
+    resource: "@SherlockodeAdvancedFormBundle/Resources/config/routing.yml"
 ```
 
 ### Step 4: Publish assets
@@ -59,3 +58,7 @@ $ php bin/console assets:install --symlink web
 [Multiple files upload form](Resources/doc/multiple_files_upload.md)
 
 [Options overview](Resources/doc/options_overview.md)
+
+### Dependent entity form type
+
+[Overview](Resources/doc/dependent_entity.md)
