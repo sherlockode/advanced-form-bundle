@@ -115,16 +115,15 @@
                 }
             }
 
-            function addHiddenFields(index, data){
+            // add hidden fields for temporary upload mode
+            function addHiddenFields(index, data) {
                 var fields = [];
                 if (isMultiple) {
-                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][pathname]', value: data.pathname});
-                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][size]', value: data.size});
-                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][mime-type]', value: data['mime-type']});
+                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][key]', value: data.key});
+                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][token]', value: data.token});
                 } else {
-                    fields.push({name: formPrefix + '[' + formName + '][files][pathname]', value: data.pathname});
-                    fields.push({name: formPrefix + '[' + formName + '][files][size]', value: data.size});
-                    fields.push({name: formPrefix + '[' + formName + '][files][mime-type]', value: data['mime-type']});
+                    fields.push({name: formPrefix + '[' + formName + '][files][key]', value: data.key});
+                    fields.push({name: formPrefix + '[' + formName + '][files][token]', value: data.token});
                 }
                 for (var i = 0; i < fields.length; i++) {
                     container.append($('<input class="afb_upload_' + index + '" type="hidden" name="' + fields[i].name + '" value="' + fields[i].value + '">'));

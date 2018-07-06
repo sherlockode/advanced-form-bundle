@@ -3,7 +3,6 @@
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -17,16 +16,12 @@ class UploadedFileType extends AbstractType
     {
         $builder
             ->add(
-                'pathname',
+                'key',
                 TextType::class
             )
             ->add(
-                'mime-type',
+                'token',
                 TextType::class
-            )
-            ->add(
-                'size',
-                IntegerType::class
             )
         ;
     }
