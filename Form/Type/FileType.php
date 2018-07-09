@@ -3,7 +3,6 @@
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\Common\Collections\Collection;
-use Sherlockode\AdvancedFormBundle\Form\DataTransformer\UploadFileTransformer;
 use Sherlockode\AdvancedFormBundle\Manager\AnnotationManager;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Symfony\Component\Form\AbstractType;
@@ -150,7 +149,6 @@ class FileType extends AbstractType
             return;
         }
 
-        $builder->get('files')->addModelTransformer(new UploadFileTransformer($isMultiple));
         $builder->addEventListener(
             FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($isMultiple, $entityNamespace, $fileProperty) {
