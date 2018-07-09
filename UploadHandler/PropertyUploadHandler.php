@@ -4,6 +4,7 @@ namespace Sherlockode\AdvancedFormBundle\UploadHandler;
 
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class PropertyUploadHandler implements UploadHandlerInterface
@@ -27,7 +28,7 @@ class PropertyUploadHandler implements UploadHandlerInterface
         $this->mappingManager = $mappingManager;
     }
 
-    public function upload($subject, $attribute, $file)
+    public function upload($subject, $attribute, File $file)
     {
         $newFile = $this->getStorage($subject, $attribute)->write($file);
 
