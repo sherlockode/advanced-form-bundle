@@ -3,6 +3,7 @@
 namespace Sherlockode\AdvancedFormBundle\UploadHandler;
 
 use Doctrine\Common\Annotations\Reader;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Vich\UploaderBundle\Handler\UploadHandler;
 use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
@@ -25,7 +26,7 @@ class VichUploadHandler implements UploadHandlerInterface
         $this->annotationReader = $annotationReader;
     }
 
-    public function upload($subject, $attribute, $file)
+    public function upload($subject, $attribute, File $file)
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $propertyAccessor->setValue($subject, $attribute, $file);
