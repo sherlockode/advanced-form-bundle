@@ -29,12 +29,12 @@ class DependentEntityType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
-        $depend = $this->getDependantElement($view, $options['dependOnElementName']);
+        $depend = $this->getDependentElement($view, $options['dependOnElementName']);
 
         if (is_array($options['mapping'])) {
             $mapping = $options['mapping'];
         } elseif (is_callable($options['mapping'])) {
-            $dependForm = $this->getDependantForm($form, $options['dependOnElementName']);
+            $dependForm = $this->getDependentForm($form, $options['dependOnElementName']);
             $mapping = [];
             foreach ($dependForm->getConfig()->getAttribute('choice_list')->getChoices() as $choice) {
                 list($k, $v) = $options['mapping']($choice);
@@ -68,14 +68,14 @@ class DependentEntityType extends AbstractType
      *
      * @throws \RuntimeException
      */
-    private function getDependantElement(FormView $view, $dependantElementName)
+    private function getDependentElement(FormView $view, $dependantElementName)
     {
         if (isset($view->children[$dependantElementName])) {
             return $view->children[$dependantElementName];
         }
 
         if ($view->parent !== null) {
-            return $this->getDependantElement($view->parent, $dependantElementName);
+            return $this->getDependentElement($view->parent, $dependantElementName);
         }
 
         throw new \RuntimeException(
@@ -91,14 +91,14 @@ class DependentEntityType extends AbstractType
      *
      * @throws \RuntimeException
      */
-    private function getDependantForm(FormInterface $form, $dependantElementName)
+    private function getDependentForm(FormInterface $form, $dependantElementName)
     {
         if ($form->has($dependantElementName)) {
             return $form->get($dependantElementName);
         }
 
         if ($form->getParent() !== null) {
-            return $this->getDependantForm($form->getParent(), $dependantElementName);
+            return $this->getDependentForm($form->getParent(), $dependantElementName);
         }
 
         throw new \RuntimeException(
