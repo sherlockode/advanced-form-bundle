@@ -3,13 +3,13 @@
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\Common\Collections\Collection;
+use Sherlockode\AdvancedFormBundle\Form\DataTransformer\TemporaryUploadFileTransformer;
 use Sherlockode\AdvancedFormBundle\Manager\AnnotationManager;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
@@ -38,15 +38,22 @@ class FileType extends AbstractType
     private $mappingManager;
 
     /**
+     * @var string
+     */
+    private $temporaryPath;
+
+    /**
      * @param UrlGeneratorInterface $urlGenerator
      * @param AnnotationManager     $annotationManager
      * @param MappingManager        $mappingManager
+     * @param string|null           $temporaryPath
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, AnnotationManager $annotationManager, MappingManager $mappingManager)
+    public function __construct(UrlGeneratorInterface $urlGenerator, AnnotationManager $annotationManager, MappingManager $mappingManager, $temporaryPath = null)
     {
         $this->urlGenerator = $urlGenerator;
         $this->annotationManager = $annotationManager;
         $this->mappingManager = $mappingManager;
+        $this->temporaryPath = $temporaryPath ?? sys_get_temp_dir();
     }
 
     /**
@@ -56,8 +63,19 @@ class FileType extends AbstractType
     {
         $resolver->setRequired(['mapping', 'upload_mode']);
         $resolver->setDefaults([
-            'upload_uri_path' => $this->urlGenerator->generate('sherlockode_afb_upload'),
+            'upload_uri_path' => function (Options $options) {
+                if ($options['upload_mode'] == 'temporary') {
+                    $url = $this->urlGenerator->generate('sherlockode_afb_upload_tmp');
+                } elseif ($options['upload_mode'] == 'immediate') {
+                    $url = $this->urlGenerator->generate('sherlockode_afb_upload');
+                } else {
+                    $url = null;
+                }
+
+                return $url;
+            },
             'remove_uri_path' => $this->urlGenerator->generate('sherlockode_afb_remove'),
+            'remove_tmp_uri_path' => $url = $this->urlGenerator->generate('sherlockode_afb_remove_tmp'),
             'multiple' => false,
             'js_callback' => null,
             'mapped' => function (Options $options) {
@@ -88,6 +106,7 @@ class FileType extends AbstractType
 
         $view->vars['uploadUriPath'] = $options['upload_uri_path'];
         $view->vars['removeUriPath'] = $options['remove_uri_path'];
+        $view->vars['removeTmpUriPath'] = $options['remove_tmp_uri_path'];
         $view->vars['multiple'] = $options['multiple'];
         $view->vars['jsCallback'] = $options['js_callback'];
         $view->vars['fieldName'] = $fileNameProperty;
@@ -125,8 +144,6 @@ class FileType extends AbstractType
         }
 
         $isMultiple = (bool) $options['multiple'];
-        $entityNamespace = $this->mappingManager->getMappedEntity($options['mapping']);
-        $fileProperty = $this->mappingManager->getFileProperty($options['mapping']);
 
         if ($isMultiple) {
             $builder->add(
@@ -143,42 +160,14 @@ class FileType extends AbstractType
                 'files',
                 UploadedFileType::class
             );
+            $builder->addViewTransformer(new CallbackTransformer(function ($data) {
+                return ['files' => $data];
+            }, function ($data) {
+                return $data['files'];
+            }));
         }
 
-        if ($options['upload_mode'] == 'immediate') {
-            return;
-        }
-
-        $builder->addEventListener(
-            FormEvents::POST_SUBMIT,
-            function (FormEvent $event) use ($isMultiple, $entityNamespace, $fileProperty) {
-                $data = $event->getData();
-
-                if (null === $data) {
-                    return;
-                }
-
-                $form = $event->getForm();
-                $object = $form->getParent()->getData();
-                $propertyAccessor = PropertyAccess::createPropertyAccessor();
-
-                if ($isMultiple) {
-                    if (is_array($data['files']) && count($data['files']) > 0) {
-                        $collection = $propertyAccessor->getValue($object, $form->getName());
-                        foreach ($data['files'] as $uploadedFile) {
-                            $item = new $entityNamespace;
-                            $propertyAccessor->setValue($item, $fileProperty, $uploadedFile);
-                            $collection->add($item);
-                        }
-                        $propertyAccessor->setValue($object, $form->getName(), $collection);
-                    }
-                } else {
-                    if (isset($data['files'])) {
-                        $propertyAccessor->setValue($object, $form->getName(), $data['files']);
-                    }
-                }
-            }
-        );
+        $builder->get('files')->addViewTransformer(new TemporaryUploadFileTransformer($isMultiple, $this->temporaryPath));
     }
 
     /**

@@ -19,6 +19,13 @@ class Configuration implements ConfigurationInterface
         $this->addStorageSection($root);
         $this->addUploaderSection($root);
 
+        $root
+            ->children()
+                ->scalarNode('tmp_uploaded_file_class')->end()
+                ->scalarNode('tmp_uploaded_file_dir')->end()
+            ->end()
+        ;
+
         return $tb;
     }
 

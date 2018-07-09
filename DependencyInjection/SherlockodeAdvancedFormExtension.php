@@ -23,6 +23,8 @@ class SherlockodeAdvancedFormExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('sherlockode_afb.uploader_mappings', $config['uploader_mappings']);
+        $container->setParameter('sherlockode_afb.tmp_uploaded_file_class', $config['tmp_uploaded_file_class']);
+        $container->setParameter('sherlockode_afb.tmp_uploaded_file_dir', $config['tmp_uploaded_file_dir']);
 
         $this->loadServices($container);
         $this->registerFormTheme($container);

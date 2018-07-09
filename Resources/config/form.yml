@@ -5,4 +5,5 @@ services:
             - '@router'
             - '@sherlockode_afb.annotation_manager'
             - '@sherlockode_afb.mapping_manager'
+            - '%sherlockode_afb.tmp_uploaded_file_dir%'
         tags: ['form.type']

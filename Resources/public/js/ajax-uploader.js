@@ -9,6 +9,7 @@
                 isMultiple = container.data('multiple'),
                 uploadUrl = container.data('uploadurl'),
                 removeUrl = container.data('removeurl'),
+                removeTmpUrl = container.data('removetmpurl'),
                 mapping = container.data('mapping'),
                 formName = container.data('name'),
                 subjectId = container.data('id'),
@@ -80,43 +81,41 @@
                         $('.afb_preview_' + uploadId).find('img').attr('src', response.path);
                     }
                     if (uploadMode === 'temporary') {
-                        addHiddenFields(uploadId, response);
+                        addHiddenFields($('.afb_preview_' + uploadId), response);
                     }
                 }).fail(onXhrFail);
             }
 
             function filePreview(uploadId, file){
+                var dataTmp = uploadMode === 'temporary' ? 'data-tmp="1"' : '';
+
+                var item = $(
+                    '<li class="afb_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '" ' + dataTmp + '>' +
+                    '<div class="afb_filename upload-details">' + file.name + '</div>' +
+                    '<div class="afb_file_progress upload-details"><div></div></div>' +
+                    '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
+                    '</li>'
+                );
+                container.find('.afb_upload_container').append(item);
+
                 if (isImgPreview && file.type.match('image.*')) {
                     var reader = new FileReader();
                     reader.onload =
                         function(e) {
-                            var item = $(
-                                '<li class="afb_item afb_preview_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
+                            item.addClass('afb_preview_item');
+                            item.prepend(
                                 '<div class="afb_file_preview">' +
                                 '<img src="' + e.target.result + '" />' +
-                                '</div>' +
-                                '<div class="afb_filename upload-details">' + file.name + '</div>' +
-                                '<div class="afb_file_progress upload-details"><div></div></div>' +
-                                '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
-                                '</li>'
+                                '</div>'
                             );
-                            container.find('.afb_upload_container').append(item);
                         };
                     reader.readAsDataURL(file);
-                } else {
-                    var item = $(
-                        '<li class="afb_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '">' +
-                        '<div class="afb_filename upload-details">' + file.name + '</div>' +
-                        '<div class="afb_file_progress upload-details"><div></div></div>' +
-                        '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
-                        '</li>'
-                    );
-                    container.find('.afb_upload_container').append(item);
                 }
             }
 
             // add hidden fields for temporary upload mode
-            function addHiddenFields(index, data) {
+            function addHiddenFields(itemContainer, data) {
+                var index = itemContainer.data('upload');
                 var fields = [];
                 if (isMultiple) {
                     fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][key]', value: data.key});
@@ -126,12 +125,12 @@
                     fields.push({name: formPrefix + '[' + formName + '][files][token]', value: data.token});
                 }
                 for (var i = 0; i < fields.length; i++) {
-                    container.append($('<input class="afb_upload_' + index + '" type="hidden" name="' + fields[i].name + '" value="' + fields[i].value + '">'));
+                    itemContainer.append($('<input class="afb_upload_' + index + '" type="hidden" name="' + fields[i].name + '" value="' + fields[i].value + '">'));
                 }
             }
 
             function deletePreview(element){
-                var uploadId = element.data('upload');
+                var uploadId = element.closest('.afb_item').data('upload');
                 container.find('li.afb_preview_' + uploadId).remove();
                 container.find('.afb_upload_' + uploadId).remove();
                 if (!isMultiple && container.find('.afb_item').length <= 0) {
@@ -142,22 +141,28 @@
                     if (pictureId) {
                         removeFile(pictureId);
                     }
+                } else if (element.closest('.afb_item').data('tmp')) {
+                    removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
                 } else {
-                    removeFile(subjectId);
+                    removeFile(subjectId, false);
                 }
             }
 
-            function removeFile(pictureId){
+            function removeFile(id, isTmp){
                 var formData = new FormData();
-                formData.append('afb_remove_file[mapping]', mapping);
-                if (pictureId) {
-                    formData.append('afb_remove_file[id]', pictureId);
+                var url = removeUrl;
+                if (!isTmp) {
+                    formData.append('afb_remove_file[mapping]', mapping);
+                    formData.append('afb_remove_file[id]', id);
+                } else {
+                    formData.append('token', id);
+                    url = removeTmpUrl;
                 }
                 if (isMultiple) {
                     formData.append('afb_remove_file[remove]', 1);
                 }
                 $.ajax({
-                    url: removeUrl,
+                    url: url,
                     type: 'POST',
                     data: formData,
                     contentType: false,
