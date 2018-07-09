@@ -7,9 +7,13 @@ use Sherlockode\AdvancedFormBundle\Form\Type\UploadTempFileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
+use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FileUploadController extends Controller
 {
@@ -23,10 +27,16 @@ class FileUploadController extends Controller
      */
     private $mappingManager;
 
-    public function __construct($uploadManager, $mappingManager)
+    /**
+     * @var string
+     */
+    private $tmpUploadClass;
+
+    public function __construct($uploadManager, $mappingManager, $tmpUploadClass)
     {
         $this->uploadManager = $uploadManager;
         $this->mappingManager = $mappingManager;
+        $this->tmpUploadClass = $tmpUploadClass;
     }
 
     /**
@@ -63,6 +73,88 @@ class FileUploadController extends Controller
         }
 
         throw new \Exception('Invalid form');
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function uploadTmpAction(Request $request)
+    {
+        $form = $this->createForm(UploadTempFileType::class, [], ['csrf_protection' => false]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $uploadedFile = $form->get('file')->getData();
+            $file = $this->uploadManager->uploadTemporary($uploadedFile);
+
+            return new JsonResponse([
+                'key' => $file->getKey(),
+                'token' => $file->getToken(),
+            ]);
+        }
+
+        return new JsonResponse([], Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function removeTmpFileAction(Request $request)
+    {
+        $token = $request->get('token');
+        $fileInfo = $this->getDoctrine()->getRepository($this->tmpUploadClass)->findOneBy(['token' => $token]);
+        if ($fileInfo instanceof TemporaryUploadedFileInterface) {
+            $this->uploadManager->removeTemporary($fileInfo);
+        }
+
+        return new JsonResponse();
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return Response
+     */
+    public function viewUploadedFileAction($token)
+    {
+        $fileInfo = $this->getDoctrine()->getRepository($this->tmpUploadClass)->findOneBy(['token' => $token]);
+
+        $file = null;
+
+        $file = $this->get('sherlockode_afb.storage.tmp_storage')->read($fileInfo->getKey());
+        $stream = fopen($file, 'rb');
+
+        return $this->createDownloadResponse(
+            $stream,
+            $fileInfo->getKey(),
+            null === $file ? null : $file->getMimeType()
+        );
+    }
+
+    /**
+     * @param resource $stream
+     * @param string   $filename
+     * @param string   $mimeType
+     *
+     * @return StreamedResponse
+     */
+    private function createDownloadResponse($stream, $filename, $mimeType = 'application/octet-stream')
+    {
+        $response = new StreamedResponse(function () use ($stream) {
+            stream_copy_to_stream($stream, fopen('php://output', 'wb'));
+        });
+
+        $disposition = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $filename
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', $mimeType ?: 'application/octet-stream');
+
+        return $response;
     }
 
     /**

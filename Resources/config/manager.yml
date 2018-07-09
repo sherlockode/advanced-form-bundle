@@ -16,6 +16,8 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@sherlockode_afb.mapping_manager'
+            - '@sherlockode_afb.storage.tmp_storage'
+            - '%sherlockode_afb.tmp_uploaded_file_class%'
         calls:
             - [ addHandler, ['@sherlockode_afb.upload_handler.vich']]
             - [ addHandler, ['@sherlockode_afb.upload_handler.property']]
@@ -27,6 +29,11 @@ services:
         class: Sherlockode\AdvancedFormBundle\Manager\MappingManager
         calls:
             - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
+
+    sherlockode_afb.storage.tmp_storage:
+        class: Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage
+        arguments:
+            - '%sherlockode_afb.tmp_uploaded_file_dir%'
 
     sherlockode_afb.twig_extension:
         class: Sherlockode\AdvancedFormBundle\Twig\Extension\UploaderExtension
