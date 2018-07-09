@@ -85,14 +85,12 @@ class FileType extends AbstractType
             $fileNameProperty = $vichAnnotation->getFileNameProperty();
         } else {
             $fileNameProperty = $fileProperty;
-            $fileProperty = null;
         }
 
         $view->vars['uploadUriPath'] = $options['upload_uri_path'];
         $view->vars['removeUriPath'] = $options['remove_uri_path'];
         $view->vars['multiple'] = $options['multiple'];
         $view->vars['jsCallback'] = $options['js_callback'];
-        $view->vars['fieldFile'] = $fileProperty;
         $view->vars['fieldName'] = $fileNameProperty;
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];
@@ -123,6 +121,10 @@ class FileType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if ($options['upload_mode'] == 'immediate') {
+            return;
+        }
+
         $isMultiple = (bool) $options['multiple'];
         $entityNamespace = $this->mappingManager->getMappedEntity($options['mapping']);
         $fileProperty = $this->mappingManager->getFileProperty($options['mapping']);
