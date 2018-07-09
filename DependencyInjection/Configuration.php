@@ -21,8 +21,8 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->scalarNode('tmp_uploaded_file_class')->end()
-                ->scalarNode('tmp_uploaded_file_dir')->end()
+                ->scalarNode('tmp_uploaded_file_class')->defaultNull()->end()
+                ->scalarNode('tmp_uploaded_file_dir')->defaultNull()->end()
             ->end()
         ;
 
