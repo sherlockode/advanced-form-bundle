@@ -7,6 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class SherlockodeAdvancedFormExtension extends Extension
@@ -37,6 +38,12 @@ class SherlockodeAdvancedFormExtension extends Extension
         }
         $definition = $container->getDefinition('sherlockode_afb.upload_handler.property');
         $definition->setArgument(1, $storages);
+
+        $definition = $container->getDefinition('sherlockode_afb.upload_manager');
+        $taggedServices = $container->findTaggedServiceIds('sherlockode_afb.upload_handler');
+        foreach ($taggedServices as $id => $tags) {
+            $definition->addMethodCall('addHandler', [new Reference($id)]);
+        }
     }
 
     /**
