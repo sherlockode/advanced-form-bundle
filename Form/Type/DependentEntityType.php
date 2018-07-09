@@ -29,16 +29,12 @@ class DependentEntityType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
-        if (!isset($view->parent->children[$options['dependOnElementName']])) {
-            throw new \RuntimeException(
-                sprintf('The %s must be defined after the form type it depends on.', __CLASS__)
-            );
-        }
+        $depend = $this->getDependantElement($view, $options['dependOnElementName']);
 
         if (is_array($options['mapping'])) {
             $mapping = $options['mapping'];
         } elseif (is_callable($options['mapping'])) {
-            $dependForm = $form->getParent()->get($options['dependOnElementName']);
+            $dependForm = $this->getDependantForm($form, $options['dependOnElementName']);
             $mapping = [];
             foreach ($dependForm->getConfig()->getAttribute('choice_list')->getChoices() as $choice) {
                 list($k, $v) = $options['mapping']($choice);
@@ -56,11 +52,57 @@ class DependentEntityType extends AbstractType
 
         $class = isset($view->vars['attr']['class']) ? $view->vars['attr']['class'] : '';
         $class = $class . ' ' . 'dependent-entity';
-        $depend = $view->parent->children[$options['dependOnElementName']];
         $view->vars['attr'] = array_merge($view->vars['attr'], [
             'class' => $class,
             'data-depend-on-element' => $depend->vars['id'],
             'data-mapping' => json_encode($mapping),
         ]);
+    }
+
+
+    /**
+     * @param FormView $view
+     * @param string   $dependantElementName
+     *
+     * @return FormView
+     *
+     * @throws \RuntimeException
+     */
+    private function getDependantElement(FormView $view, $dependantElementName)
+    {
+        if (isset($view->children[$dependantElementName])) {
+            return $view->children[$dependantElementName];
+        }
+
+        if ($view->parent !== null) {
+            return $this->getDependantElement($view->parent, $dependantElementName);
+        }
+
+        throw new \RuntimeException(
+            sprintf('The %s must be defined after the form type it depends on.', __CLASS__)
+        );
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param string        $dependantElementName
+     *
+     * @return FormInterface
+     *
+     * @throws \RuntimeException
+     */
+    private function getDependantForm(FormInterface $form, $dependantElementName)
+    {
+        if ($form->has($dependantElementName)) {
+            return $form->get($dependantElementName);
+        }
+
+        if ($form->getParent() !== null) {
+            return $this->getDependantForm($form->getParent(), $dependantElementName);
+        }
+
+        throw new \RuntimeException(
+            sprintf('Could not find "%s" element in form.', $dependantElementName)
+        );
     }
 }
