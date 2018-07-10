@@ -74,4 +74,18 @@ class MappingManager
 
         return null;
     }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public function getHandlerCode($type)
+    {
+        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['handler'])) {
+            return $this->mapping[$type]['handler'];
+        }
+
+        return null;
+    }
 }

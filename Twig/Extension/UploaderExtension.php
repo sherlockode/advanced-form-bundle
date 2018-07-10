@@ -3,6 +3,7 @@
 namespace Sherlockode\AdvancedFormBundle\Twig\Extension;
 
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
+use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -20,16 +21,23 @@ class UploaderExtension extends \Twig_Extension
      */
     private $mappingManager;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, MappingManager $mappingManager)
+    /**
+     * @var UploadManager
+     */
+    private $uploadManager;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, MappingManager $mappingManager, UploadManager $uploadManager)
     {
         $this->urlGenerator = $urlGenerator;
         $this->mappingManager = $mappingManager;
+        $this->uploadManager = $uploadManager;
     }
 
     public function getFunctions()
     {
         return [
             new \Twig_SimpleFunction('sherlockode_afb_asset', [$this, 'getAsset']),
+            new \Twig_SimpleFunction('sherlockode_afb_filename', [$this, 'getFilename']),
         ];
     }
 
@@ -41,5 +49,10 @@ class UploaderExtension extends \Twig_Extension
             $params[$key] = $parameter === '{id}' ? $id : $parameter;
         }
         return $this->urlGenerator->generate($routeInfo['name'], $params);
+    }
+
+    public function getFilename($type, $object)
+    {
+        return $this->uploadManager->getFilename($type, $object);
     }
 }

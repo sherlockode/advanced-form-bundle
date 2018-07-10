@@ -30,7 +30,7 @@
                     {% set i = i + 1 %}
                     <li class="afb_preview_item afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
                         <div class="afb_file_preview">
-                            <img src="{{ sherlockode_afb_asset('user', file.id) }}" />
+                            <img src="{{ sherlockode_afb_asset(mapping, file.id) }}" />
                         </div>
                         <div class="afb_filename">{{ attribute(file, fieldName) }}</div>
                         <div class="afb_file_progress"><div></div></div>
@@ -43,7 +43,7 @@
                 {% for file in files %}
                     {% set i = i + 1 %}
                     <li class="afb_item afb_preview_0" data-upload="{{ i }}">
-                        <div class="afb_filename upload-details">{{ attribute(file, fieldName) }}</div>
+                        <div class="afb_filename upload-details">{{ sherlockode_afb_filename(mapping, file) }}</div>
                         <div class="afb_file_progress upload-details"><div></div></div>
                         <a class="afb_remove_file upload-details" href="#" data-upload="0" data-id="{{ file.id }}">X</a>
                     </li>

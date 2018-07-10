@@ -48,9 +48,9 @@ class UploadManager
         $this->tmpUploadedFileClass = $tmpUploadedFileClass;
     }
 
-    public function addHandler(UploadHandlerInterface $handler)
+    public function addHandler(UploadHandlerInterface $handler, $code)
     {
-        $this->handlers[] = $handler;
+        $this->handlers[$code] = $handler;
     }
 
     /**
@@ -68,13 +68,10 @@ class UploadManager
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
+            $handler = $this->getHandler($type, $subject);
             $field = $this->mappingManager->getFileProperty($type);
-            foreach ($this->handlers as $handler) {
-                if ($handler->supports($subject, $field)) {
-                    $handler->upload($subject, $field, $uploadedFile);
-                    break;
-                }
-            }
+            $handler->upload($subject, $field, $uploadedFile);
+
             $this->om->flush();
 
             return;
@@ -132,17 +129,50 @@ class UploadManager
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
+            $handler = $this->getHandler($type, $subject);
             $field = $this->mappingManager->getFileProperty($type);
-            foreach ($this->handlers as $handler) {
-                if ($handler->supports($subject, $field)) {
-                    $handler->remove($subject, $field);
-                    break;
-                }
-            }
+            $handler->remove($subject, $field);
             if ($deleteObject) {
                 $this->om->remove($subject);
             }
             $this->om->flush();
         }
+    }
+
+    /**
+     * @param string $type
+     * @param object $subject
+     *
+     * @return string
+     */
+    public function getFilename($type, $subject)
+    {
+        $handler = $this->getHandler($type, $subject);
+        $field = $this->mappingManager->getFileProperty($type);
+
+        return $handler->getFilename($subject, $field);
+    }
+
+    /**
+     * @param string $type
+     * @param object $subject
+     *
+     * @return UploadHandlerInterface
+     * @throws \RuntimeException
+     */
+    private function getHandler($type, $subject)
+    {
+        $handlerCode = $this->mappingManager->getHandlerCode($type);
+
+        if (!isset($this->handlers[$handlerCode])) {
+            throw new \RuntimeException(sprintf('Unknown handler "%s"', $handlerCode));
+        }
+        $handler = $this->handlers[$handlerCode];
+        $field = $this->mappingManager->getFileProperty($type);
+        if (!$handler->supports($subject, $field)) {
+            throw new \RuntimeException(sprintf('%s does not support this object', get_class($handler)));
+        }
+
+        return $handler;
     }
 }

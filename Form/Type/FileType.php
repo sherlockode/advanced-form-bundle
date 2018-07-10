@@ -4,8 +4,8 @@ namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\Common\Collections\Collection;
 use Sherlockode\AdvancedFormBundle\Form\DataTransformer\TemporaryUploadFileTransformer;
-use Sherlockode\AdvancedFormBundle\Manager\AnnotationManager;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
+use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -28,9 +28,9 @@ class FileType extends AbstractType
     private $urlGenerator;
 
     /**
-     * @var AnnotationManager
+     * @var UploadManager
      */
-    private $annotationManager;
+    private $uploadManager;
 
     /**
      * @var MappingManager
@@ -44,14 +44,14 @@ class FileType extends AbstractType
 
     /**
      * @param UrlGeneratorInterface $urlGenerator
-     * @param AnnotationManager     $annotationManager
+     * @param UploadManager         $uploadManager
      * @param MappingManager        $mappingManager
      * @param string|null           $temporaryPath
      */
-    public function __construct(UrlGeneratorInterface $urlGenerator, AnnotationManager $annotationManager, MappingManager $mappingManager, $temporaryPath = null)
+    public function __construct(UrlGeneratorInterface $urlGenerator, UploadManager $uploadManager, MappingManager $mappingManager, $temporaryPath = null)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->annotationManager = $annotationManager;
+        $this->uploadManager = $uploadManager;
         $this->mappingManager = $mappingManager;
         $this->temporaryPath = $temporaryPath ?? sys_get_temp_dir();
     }
@@ -93,23 +93,13 @@ class FileType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
-        $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $subject = $form->getParent()->getData();
-        $entityNamespace = $this->mappingManager->getMappedEntity($options['mapping']);
-        $fileProperty = $this->mappingManager->getFileProperty($options['mapping']);
-        $vichAnnotation = $this->annotationManager->getVichAnnotations($entityNamespace, $fileProperty);
-        if ($vichAnnotation) {
-            $fileNameProperty = $vichAnnotation->getFileNameProperty();
-        } else {
-            $fileNameProperty = $fileProperty;
-        }
 
         $view->vars['uploadUriPath'] = $options['upload_uri_path'];
         $view->vars['removeUriPath'] = $options['remove_uri_path'];
         $view->vars['removeTmpUriPath'] = $options['remove_tmp_uri_path'];
         $view->vars['multiple'] = $options['multiple'];
         $view->vars['jsCallback'] = $options['js_callback'];
-        $view->vars['fieldName'] = $fileNameProperty;
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];
         $view->vars['imagePreview'] = $options['image_preview'];
@@ -117,6 +107,7 @@ class FileType extends AbstractType
         $view->vars['files'] = [];
 
         if ($options['multiple']) {
+            $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $collection = $propertyAccessor->getValue($subject, $form->getName());
             if ($collection instanceof Collection) {
                 foreach ($collection as $media) {
@@ -125,7 +116,7 @@ class FileType extends AbstractType
             }
         } else {
             if ($subject->getId()) {
-                $imageName = $propertyAccessor->getValue($subject, $fileNameProperty);
+                $imageName = $this->uploadManager->getFilename($options['mapping'], $subject);
                 if (!empty($imageName)) {
                     $view->vars['files'][] = $subject;
                 }
