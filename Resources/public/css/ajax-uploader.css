@@ -24,37 +24,49 @@
     margin-bottom: 20px;
 }
 
-.afb_file_container .afb_upload_nopreview .afb_item > .upload-details {
+.afb_file_container .upload-details {
     height: 25px;
     overflow: hidden;
     display: inline-block;
 }
 
-.afb_file_container .afb_upload_nopreview .afb_filename {
+.afb_file_container .afb_upload_preview .upload-details {
+    display: block;
+}
+
+.afb_file_container .afb_filename {
     width: 30%;
+}
+.afb_file_container .afb_upload_preview .afb_filename {
+    width: auto;
 }
 
 .afb_file_container .afb_file_progress {
     border: 1px solid #ccc;
     height: 25px;
-}
-
-.afb_file_container .afb_upload_nopreview .afb_file_progress {
     width: 30%;
 }
+
+.afb_file_container .afb_upload_preview .afb_file_progress {
+    width: auto;
+}
+
 .afb_file_container .afb_file_progress > div {
     width: 0;
     height: 100%;
     background: #26b89a;
 }
-
-.afb_file_container .afb_remove_file {
-    text-align: center;
+.afb_file_container .afb_upload_preview .afb_remove_file.upload-details {
     display: block;
+}
+.afb_file_container .afb_remove_file.upload-details {
+    text-align: center;
     width: 25px;
     height: 25px;
     background: #eee;
     border-radius: 50%;
+    line-height: 25px;
+    margin: auto;
 }
 
 .afb_file_container .afb_preview_item {
