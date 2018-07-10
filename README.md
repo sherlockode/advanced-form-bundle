@@ -13,7 +13,7 @@ This version of the bundle requires Symfony 3.3+, VichUploaderBundle 1.6+, and j
 
 The best way to install this bundle is to rely on [Composer](https://getcomposer.org/):
 
-``` bash
+```bash
 $ composer require sherlockode/advanced-form-bundle
 ```
 
@@ -21,7 +21,7 @@ $ composer require sherlockode/advanced-form-bundle
 
 Enable the bundle in the kernel
 
-``` php
+```php
 <?php
 // app/AppKernel.php
 
@@ -38,7 +38,7 @@ public function registerBundles()
 
 Import the routing in app/config/routing.yml
 
-``` yaml
+```yaml
 sherlockode_advanced_form:
     resource: "@SherlockodeAdvancedFormBundle/Resources/config/routing.yml"
 ```
@@ -54,6 +54,8 @@ $ php bin/console assets:install --symlink web
 ### Ajax uploader
 
 [Create a single file upload form](Resources/doc/single_file_upload.md)
+
+[Use the temporary upload mode](Resources/doc/temporary_upload.md)
 
 [Multiple files upload form](Resources/doc/multiple_files_upload.md)
 
