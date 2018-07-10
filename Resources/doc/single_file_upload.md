@@ -3,14 +3,13 @@ Create a single file upload form
 
 To create a single file upload form, we have to set an entity with Vich uploader annotations
 
-``` php
+```php
 <?php
 
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -70,27 +69,16 @@ class People
      */
     private $updatedAt;
 
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName()
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     *
-     * @return $this
-     */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
@@ -98,19 +86,11 @@ class People
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName()
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     *
-     * @return $this
-     */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
@@ -118,11 +98,6 @@ class People
         return $this;
     }
 
-    /**
-     * @param File|UploadedFile $image
-     *
-     * @return $this
-     */
     public function setImageFile(File $image = null)
     {
         $this->imageFile = $image;
@@ -134,19 +109,11 @@ class People
         return $this;
     }
 
-    /**
-     * @return File|null
-     */
     public function getImageFile()
     {
         return $this->imageFile;
     }
 
-    /**
-     * @param string $imageName
-     *
-     * @return $this
-     */
     public function setImageName($imageName)
     {
         $this->imageName = $imageName;
@@ -154,19 +121,11 @@ class People
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getImageName()
     {
         return $this->imageName;
     }
 
-    /**
-     * @param integer $imageSize
-     *
-     * @return $this
-     */
     public function setImageSize($imageSize)
     {
         $this->imageSize = $imageSize;
@@ -174,9 +133,6 @@ class People
         return $this;
     }
 
-    /**
-     * @return integer|null
-     */
     public function getImageSize()
     {
         return $this->imageSize;
@@ -184,7 +140,7 @@ class People
 }
 ```
 Then, we have to configure the mapping between VichUploader and the bundle. Add in your config.yml file:
-``` yaml
+```yaml
 sherlockode_advanced_form:
     uploader_mappings:
         - 
@@ -197,7 +153,7 @@ Of course, you can add as many mapping as you need.
 
 So, we can now create our form:
 
-``` php
+```php
 <?php
 
 namespace AppBundle\Form;
@@ -209,9 +165,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class PeopleType
- */
 class PeopleType extends AbstractType
 {
     /**
@@ -221,23 +174,14 @@ class PeopleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'firstName',
-                TextType::class
-            )
-            ->add(
-                'lastName',
-                TextType::class
-            )
-            ->add(
-                'imageFile',
-                FileType::class,
-                [
-                    'label' => 'Drop files here',
-                    'mapping' => 'people', // the id of the mapping from config.yml
-                    'image_preview' => true,
-                ]
-            );
+            ->add('firstName', TextType::class)
+            ->add('lastName', TextType::class)
+            ->add('imageFile', FileType::class, [
+                'label' => 'Drop files here',
+                'mapping' => 'people', // the id of the mapping from config.yml
+                'image_preview' => true,
+                'upload_mode' => 'immediate',
+            ]);
     }
 
     /**
@@ -245,18 +189,19 @@ class PeopleType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(
-            [
-                'data_class' => People::class
-            ]
-        );
+        $resolver->setDefaults([
+            'data_class' => People::class,
+        ]);
     }
 }
-
 ```
-Then, the controller
+Notice the "upload_mode" option which let's you choose how the entity will be updated. In the example, we set the value
+to "immediate", meaning that the entity will be updated with the new picture as soon as the AJAX request is done
+(when drap & drop is over).
 
-``` php
+You can then define a simple controller using the form:
+
+```php
 <?php
 
 namespace AppBundle\Controller;
@@ -267,18 +212,11 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class PeopleController extends Controller
 {
     /**
      * @Route("/people/{people}", name="people_form")
-     *
-     * @param Request       $request
-     * @param ObjectManager $om
-     * @param People|null   $people
-     *
-     * @return Response
      */
     public function indexAction(Request $request, ObjectManager $om, People $people = null)
     {
@@ -295,19 +233,15 @@ class PeopleController extends Controller
             return $this->redirectToRoute('people_form', ['people' => $people->getId()]);
         }
 
-        return $this->render(
-            'AppBundle:People:form.html.twig',
-            [
-                'form' => $form->createView()
-            ]
-        );
+        return $this->render('@App/People/form.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }
-
 ```
-And to finish, let's create the view
-``` twig
-{% extends "::base.html.twig" %}
+And to finish, let's create the view including the CSS and JavaScript files
+```twig
+{% extends "base.html.twig" %}
 {% block body %}
 <div class="container">
     <div class="row">
