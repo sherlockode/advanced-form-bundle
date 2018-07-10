@@ -49,6 +49,17 @@ class PropertyUploadHandler implements UploadHandlerInterface
     }
 
     /**
+     * @param string $subject
+     * @param string $attribute
+     *
+     * @return string
+     */
+    public function getFilename($subject, $attribute)
+    {
+        return $this->propertyAccessor->getValue($subject, $attribute);
+    }
+
+    /**
      * @param object $subject
      * @param string $attribute
      *

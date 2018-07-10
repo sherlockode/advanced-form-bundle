@@ -62,6 +62,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('file_property')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('handler')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('storage')->cannotBeEmpty()->end()
                         ->arrayNode('route')
                             ->children()

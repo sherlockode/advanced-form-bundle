@@ -45,4 +45,21 @@ class VichUploadHandler implements UploadHandlerInterface
 
         return $annotation !== null;
     }
+
+    /**
+     * @param string $subject
+     * @param string $attribute
+     *
+     * @return string
+     */
+    public function getFilename($subject, $attribute)
+    {
+        $property = new \ReflectionProperty(get_class($subject), $attribute);
+        $annotation = $this->annotationReader->getPropertyAnnotation($property, UploadableField::class);
+        $fileProperty = $annotation->getFilenameProperty();
+
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        return $propertyAccessor->getValue($subject, $fileProperty);
+    }
+
 }

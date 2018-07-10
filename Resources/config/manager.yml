@@ -5,7 +5,7 @@ services:
             - '@vich_uploader.upload_handler'
             - '@annotation_reader'
         tags:
-            - { name: 'sherlockode_afb.upload_handler' }
+            - { name: 'sherlockode_afb.upload_handler', alias: vich }
 
     sherlockode_afb.upload_handler.property:
         class: Sherlockode\AdvancedFormBundle\UploadHandler\PropertyUploadHandler
@@ -13,7 +13,7 @@ services:
             - '@sherlockode_afb.mapping_manager'
             - ~
         tags:
-            - { name: 'sherlockode_afb.upload_handler' }
+            - { name: 'sherlockode_afb.upload_handler', alias: property }
 
     sherlockode_afb.upload_manager:
         class: Sherlockode\AdvancedFormBundle\Manager\UploadManager
@@ -22,9 +22,6 @@ services:
             - '@sherlockode_afb.mapping_manager'
             - '@sherlockode_afb.storage.tmp_storage'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
-
-    sherlockode_afb.annotation_manager:
-        class: Sherlockode\AdvancedFormBundle\Manager\AnnotationManager
 
     sherlockode_afb.mapping_manager:
         class: Sherlockode\AdvancedFormBundle\Manager\MappingManager
@@ -41,5 +38,6 @@ services:
         arguments:
             - '@router'
             - '@sherlockode_afb.mapping_manager'
+            - '@sherlockode_afb.upload_manager'
         tags:
             - { name: twig.extension }

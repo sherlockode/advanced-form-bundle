@@ -42,7 +42,9 @@ class SherlockodeAdvancedFormExtension extends Extension
         $definition = $container->getDefinition('sherlockode_afb.upload_manager');
         $taggedServices = $container->findTaggedServiceIds('sherlockode_afb.upload_handler');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addHandler', [new Reference($id)]);
+            foreach ($tags as $tag) {
+                $definition->addMethodCall('addHandler', [new Reference($id), $tag['alias'] ?? $id]);
+            }
         }
     }
 
