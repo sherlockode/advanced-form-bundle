@@ -139,19 +139,29 @@ class People
     }
 }
 ```
-Then, we have to configure the mapping between VichUploader and the bundle. Add in your config.yml file:
+Then, we have to configure the way the file will be uploaded. Add in your config.yml file:
 ```yaml
 sherlockode_advanced_form:
+    storages:
+        picture:    # name of the storage
+            filesystem:  # type of storage
+                path: '%kernel.project_dir%/var/uploads/pictures'
     uploader_mappings:
         - 
             id: people                          # a name for the mapping, useful in forms configuration
             entity: AppBundle\Entity\People     # the mapped entity
-            file_property: imageFile            # the name of the entity property which the annotation "@Vich\UploadableField"
+            file_property: imageFile            # the name of the entity property to use
+            handler: property                   # the upload handler for this mapping
+            storage: picture                    # the storage name
 ```
 
-Of course, you can add as many mapping as you need.
+Of course, you can add as many storages and mappings as you need.
 
-So, we can now create our form:
+In case you want to use VichUploaderBundle on your entity, the file_property should indicate the entity attribute holding
+the Vich UploadableField annotation. The handler to use is "vich" and you will not need a specific storage
+(this is done in Vich's configuration).
+
+We can now create our form:
 
 ```php
 <?php
