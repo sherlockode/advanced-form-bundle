@@ -39,6 +39,10 @@ class SherlockodeAdvancedFormExtension extends Extension
         $definition = $container->getDefinition('sherlockode_afb.upload_handler.property');
         $definition->setArgument(1, $storages);
 
+        if (!class_exists('Vich\UploaderBundle\VichUploaderBundle')) {
+            $container->removeDefinition('sherlockode_afb.upload_handler.vich');
+        }
+
         $definition = $container->getDefinition('sherlockode_afb.upload_manager');
         $taggedServices = $container->findTaggedServiceIds('sherlockode_afb.upload_handler');
         foreach ($taggedServices as $id => $tags) {

@@ -5,7 +5,7 @@ Powerful Symfony form components
 
 ## Prerequisites
 
-This version of the bundle requires Symfony 3.3+, VichUploaderBundle 1.6+, and jQuery.
+This bundle requires Symfony 3 and jQuery.
 
 ## Installation
 
