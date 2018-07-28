@@ -2,9 +2,9 @@
 
 namespace Sherlockode\AdvancedFormBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sherlockode\AdvancedFormBundle\Form\Type\RemoveFileType;
 use Sherlockode\AdvancedFormBundle\Form\Type\UploadTempFileType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
@@ -52,7 +52,7 @@ class FileUploadController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('file')->getData();
             try {
-                $this->uploadManager->upload(
+                $object = $this->uploadManager->upload(
                     $uploadedFile,
                     $form->get('mapping')->getData(),
                     $form->get('id')->getData()
@@ -61,15 +61,17 @@ class FileUploadController extends Controller
                 throw $e;
             }
 
+            $data = ['id' => $object->getId()];
             $routeInfo = $this->mappingManager->getRouteProperty($form->get('mapping')->getData());
-            $params = [];
-            foreach ($routeInfo['parameters'] as $key => $parameter) {
-                $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
-            }
+            if ($routeInfo) {
+                $params = [];
+                foreach ($routeInfo['parameters'] as $key => $parameter) {
+                    $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
+                }
 
-            return new JsonResponse([
-                'path' => $this->generateUrl($routeInfo['name'], $params),
-            ]);
+                $data['path'] = $this->generateUrl($routeInfo['name'], $params);
+            }
+            return new JsonResponse($data);
         }
 
         throw new \Exception('Invalid form');

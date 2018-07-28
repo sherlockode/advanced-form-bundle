@@ -48,16 +48,9 @@
                     formData.append('afb_upload_temp_file[mapping]', mapping);
                 }
                 if (subjectId) {
-                    if (isMultiple) {
-                        // ...
-                    } else {
-                        formData.append('afb_upload_temp_file[id]', subjectId);
-                    }
+                    formData.append('afb_upload_temp_file[id]', subjectId);
                 }
                 filePreview(uploadId, file);
-                if (uploadMode === 'none') {
-                    return;
-                }
 
                 $.ajax({
                     xhr: function() {
@@ -79,6 +72,9 @@
                     }
                     if (response.path && isImgPreview && file.type.match('image.*')) {
                         $('.afb_preview_' + uploadId).find('img').attr('src', response.path);
+                    }
+                    if (response.id) {
+                        $('.afb_preview_' + uploadId).find('.afb_remove_file').data('id', response.id);
                     }
                     if (uploadMode === 'temporary') {
                         addHiddenFields($('.afb_preview_' + uploadId), response);
@@ -130,12 +126,6 @@
             }
 
             function deletePreview(element){
-                var uploadId = element.closest('.afb_item').data('upload');
-                container.find('li.afb_preview_' + uploadId).remove();
-                container.find('.afb_upload_' + uploadId).remove();
-                if (!isMultiple && container.find('.afb_item').length <= 0) {
-                    container.find('.afb_dropzone').show();
-                }
                 if (isMultiple) {
                     var pictureId = element.data('id');
                     if (pictureId) {
@@ -145,6 +135,10 @@
                     removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
                 } else {
                     removeFile(subjectId, false);
+                }
+                element.closest('.afb_item').remove();
+                if (container.find('.afb_item').length === 0) {
+                    container.find('.afb_dropzone').show();
                 }
             }
 

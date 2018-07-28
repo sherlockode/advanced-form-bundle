@@ -7,6 +7,7 @@ use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
 use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class UploadManager
 {
@@ -58,6 +59,7 @@ class UploadManager
      * @param string|null  $type
      * @param int|null     $id
      *
+     * @return object
      * @throws \Exception
      */
     public function upload(UploadedFile $uploadedFile, $type, $id = null)
@@ -75,12 +77,25 @@ class UploadManager
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
         }
+        if ($isMultiple) {
+            $fileContainer = new $containerEntityClass();
+            $propertyAccessor = PropertyAccess::createPropertyAccessor();
+            $files = $propertyAccessor->getValue($subject, 'files');
+            if ($files instanceof \Traversable) {
+                $files = iterator_to_array($files);
+            }
+            $files[] = $fileContainer;
+            $propertyAccessor->setValue($subject, 'files', $files);
+            $subject = $fileContainer;
+        }
 
         $handler = $this->getHandler($mapping, $subject);
         $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
 
         $this->om->persist($subject);
         $this->om->flush();
+
+        return $subject;
     }
 
     /**
@@ -128,14 +143,14 @@ class UploadManager
     {
         if (null !== $type && null !== $id) {
             $mapping = $this->mappingManager->getMapping($type);
-            $subject = $this->om->getRepository($mapping->class)->find($id);
+            $subject = $this->om->getRepository($mapping->fileClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
             $handler = $this->getHandler($mapping, $subject);
             $field = $mapping->fileProperty;
             $handler->remove($subject, $field);
-            if ($deleteObject) {
+            if ($deleteObject || $mapping->multiple) {
                 $this->om->remove($subject);
             }
             $this->om->flush();
