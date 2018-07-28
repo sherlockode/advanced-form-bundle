@@ -60,24 +60,27 @@ class UploadManager
      *
      * @throws \Exception
      */
-    public function upload(UploadedFile $uploadedFile, $type = null, $id = null)
+    public function upload(UploadedFile $uploadedFile, $type, $id = null)
     {
-        if (null !== $type && null !== $id) {
-            $entityClass = $this->mappingManager->getMappedEntity($type);
+        $mapping = $this->mappingManager->getMapping($type);
+        $entityClass = $mapping->class;
+        $containerEntityClass = $mapping->fileClass;
+        $isMultiple = $mapping->multiple;
+
+        if ($id === null) {
+            $subject = new $entityClass();
+        } else {
             $subject = $this->om->getRepository($entityClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
-            $handler = $this->getHandler($type, $subject);
-            $field = $this->mappingManager->getFileProperty($type);
-            $handler->upload($subject, $field, $uploadedFile);
-
-            $this->om->flush();
-
-            return;
         }
 
-        throw new \Exception('Missing data');
+        $handler = $this->getHandler($mapping, $subject);
+        $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
+
+        $this->om->persist($subject);
+        $this->om->flush();
     }
 
     /**
@@ -124,13 +127,13 @@ class UploadManager
     public function remove($type, $id, $deleteObject = false)
     {
         if (null !== $type && null !== $id) {
-            $entityClass = $this->mappingManager->getMappedEntity($type);
-            $subject = $this->om->getRepository($entityClass)->find($id);
+            $mapping = $this->mappingManager->getMapping($type);
+            $subject = $this->om->getRepository($mapping->class)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
-            $handler = $this->getHandler($type, $subject);
-            $field = $this->mappingManager->getFileProperty($type);
+            $handler = $this->getHandler($mapping, $subject);
+            $field = $mapping->fileProperty;
             $handler->remove($subject, $field);
             if ($deleteObject) {
                 $this->om->remove($subject);
@@ -140,35 +143,35 @@ class UploadManager
     }
 
     /**
-     * @param string $type
-     * @param object $subject
+     * @param Mapping $mapping
+     * @param object  $subject
      *
      * @return string
      */
-    public function getFilename($type, $subject)
+    public function getFilename(Mapping $mapping, $subject)
     {
-        $handler = $this->getHandler($type, $subject);
-        $field = $this->mappingManager->getFileProperty($type);
+        $handler = $this->getHandler($mapping, $subject);
+        $field = $mapping->fileProperty;
 
         return $handler->getFilename($subject, $field);
     }
 
     /**
-     * @param string $type
-     * @param object $subject
+     * @param Mapping $mapping
+     * @param object  $subject
      *
      * @return UploadHandlerInterface
      * @throws \RuntimeException
      */
-    private function getHandler($type, $subject)
+    private function getHandler(Mapping $mapping, $subject)
     {
-        $handlerCode = $this->mappingManager->getHandlerCode($type);
+        $handlerCode = $mapping->handler;
 
         if (!isset($this->handlers[$handlerCode])) {
             throw new \RuntimeException(sprintf('Unknown handler "%s"', $handlerCode));
         }
         $handler = $this->handlers[$handlerCode];
-        $field = $this->mappingManager->getFileProperty($type);
+        $field = $mapping->fileProperty;
         if (!$handler->supports($subject, $field)) {
             throw new \RuntimeException(sprintf('%s does not support this object', get_class($handler)));
         }

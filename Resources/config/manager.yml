@@ -26,7 +26,7 @@ services:
     sherlockode_afb.mapping_manager:
         class: Sherlockode\AdvancedFormBundle\Manager\MappingManager
         calls:
-            - [setMapping, ['%sherlockode_afb.uploader_mappings%']]
+            - [setMappingData, ['%sherlockode_afb.uploader_mappings%']]
 
     sherlockode_afb.storage.tmp_storage:
         class: Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage

@@ -76,7 +76,6 @@ class FileType extends AbstractType
             },
             'remove_uri_path' => $this->urlGenerator->generate('sherlockode_afb_remove'),
             'remove_tmp_uri_path' => $url = $this->urlGenerator->generate('sherlockode_afb_remove_tmp'),
-            'multiple' => false,
             'js_callback' => null,
             'mapped' => function (Options $options) {
                 return $options['upload_mode'] != 'immediate';
@@ -94,11 +93,13 @@ class FileType extends AbstractType
     {
         parent::buildView($view, $form, $options);
         $subject = $form->getParent()->getData();
+        $mapping = $this->mappingManager->getMapping($options['mapping']);
+        $isMultiple = $mapping->multiple;
 
         $view->vars['uploadUriPath'] = $options['upload_uri_path'];
         $view->vars['removeUriPath'] = $options['remove_uri_path'];
         $view->vars['removeTmpUriPath'] = $options['remove_tmp_uri_path'];
-        $view->vars['multiple'] = $options['multiple'];
+        $view->vars['multiple'] = $isMultiple;
         $view->vars['jsCallback'] = $options['js_callback'];
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];
@@ -106,7 +107,7 @@ class FileType extends AbstractType
         $view->vars['uploadMode'] = $options['upload_mode'];
         $view->vars['files'] = [];
 
-        if ($options['multiple']) {
+        if ($isMultiple) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $collection = $propertyAccessor->getValue($subject, $form->getName());
             if ($collection instanceof Collection) {
@@ -116,7 +117,7 @@ class FileType extends AbstractType
             }
         } else {
             if ($subject->getId()) {
-                $imageName = $this->uploadManager->getFilename($options['mapping'], $subject);
+                $imageName = $this->uploadManager->getFilename($mapping, $subject);
                 if (!empty($imageName)) {
                     $view->vars['files'][] = $subject;
                 }
@@ -134,7 +135,7 @@ class FileType extends AbstractType
             return;
         }
 
-        $isMultiple = (bool) $options['multiple'];
+        $isMultiple = $this->mappingManager->getMapping($options['mapping'])->multiple;
 
         if ($isMultiple) {
             $builder->add(

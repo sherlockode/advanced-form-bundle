@@ -10,11 +10,16 @@ class MappingManager
     private $mapping;
 
     /**
+     * @var Mapping[]
+     */
+    private $mappings;
+
+    /**
      * @param array $mapping
      *
      * @return $this
      */
-    public function setMapping($mapping)
+    public function setMappingData($mapping)
     {
         $this->mapping = $mapping;
 
@@ -24,29 +29,30 @@ class MappingManager
     /**
      * @param string $type
      *
-     * @return string
+     * @return Mapping
+     * @throws \Exception
      */
-    public function getMappedEntity($type)
+    public function getMapping($type)
     {
-        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['class'])) {
-            return $this->mapping[$type]['class'];
+        if (!isset($this->mappings[$type])) {
+            if (!isset($this->mapping[$type])) {
+                throw new \Exception(sprintf('Mapping "%s" does not exist', $type));
+            }
+            $data = $this->mapping[$type];
+
+            $mapping = new Mapping();
+            $mapping->id = $type;
+            $mapping->class = $data['class'];
+            $mapping->multiple = $data['multiple'];
+            $mapping->fileClass = $data['multiple'] ? $data['file_class'] : $data['class'];
+            $mapping->fileProperty = $data['file_property'];
+            $mapping->handler = $data['handler'];
+            $mapping->route = $data['route'] ?? null;
+
+            $this->mappings[$type] = $mapping;
         }
 
-        return null;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return string
-     */
-    public function getFileProperty($type)
-    {
-        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['file_property'])) {
-            return $this->mapping[$type]['file_property'];
-        }
-
-        return null;
+        return $this->mappings[$type];
     }
 
     public function getRouteProperty($type)
@@ -67,23 +73,10 @@ class MappingManager
     public function getStorage($object, $attribute)
     {
         foreach ($this->mapping as $type => $data) {
-            if ($data['class'] == get_class($object) && $data['file_property'] == $attribute) {
+            $class = $data['multiple'] ? $data['file_class'] : $data['class'];
+            if ($class == get_class($object) && $data['file_property'] == $attribute) {
                 return $data['storage'] ?? null;
             }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return string
-     */
-    public function getHandlerCode($type)
-    {
-        if (isset($this->mapping[$type]) && isset($this->mapping[$type]['handler'])) {
-            return $this->mapping[$type]['handler'];
         }
 
         return null;

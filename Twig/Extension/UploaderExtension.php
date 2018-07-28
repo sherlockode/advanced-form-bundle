@@ -53,6 +53,8 @@ class UploaderExtension extends \Twig_Extension
 
     public function getFilename($type, $object)
     {
-        return $this->uploadManager->getFilename($type, $object);
+        $mapping = $this->mappingManager->getMapping($type);
+
+        return $this->uploadManager->getFilename($mapping, $object);
     }
 }

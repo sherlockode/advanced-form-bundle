@@ -13,7 +13,6 @@ Options overview
 
 * `js_callback`: A string representing a JavaScript function name for a callback after an upload. `null` by default.
 * `image_preview`: A boolean which determine the default callback after an upload. Set it to true if you want a preview for your pictures. `false` by default.
-* `multiple`: A boolean that allow multiple files upload. `false` by default. 
 * `remove_uri_path`: The url for removing files. It can be useful if you want to override the default controller.
   Default value is the route `sherlockode_afb_remove`.
 * `remove_tmp_uri_path`: The url for removing temporary files from temporary mode. Default value is the route `sherlockode_afb_remove_tmp`.
