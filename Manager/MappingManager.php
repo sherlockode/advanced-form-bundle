@@ -46,6 +46,7 @@ class MappingManager
             $mapping->multiple = $data['multiple'];
             $mapping->fileClass = $data['multiple'] ? $data['file_class'] : $data['class'];
             $mapping->fileProperty = $data['file_property'];
+            $mapping->fileCollectionProperty = $data['file_collection_property'];
             $mapping->handler = $data['handler'];
             $mapping->route = $data['route'] ?? null;
 

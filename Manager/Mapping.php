@@ -9,6 +9,7 @@ class Mapping
     public $multiple;
     public $fileClass;
     public $fileProperty;
+    public $fileCollectionProperty;
     public $handler;
     public $storage;
     public $route;

@@ -63,6 +63,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
                         ->booleanNode('multiple')->defaultFalse()->end()
                         ->scalarNode('file_property')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('file_collection_property')->defaultNull()->cannotBeEmpty()->end()
                         ->scalarNode('file_class')->cannotBeEmpty()->end()
                         ->scalarNode('handler')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('storage')->cannotBeEmpty()->end()

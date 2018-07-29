@@ -80,12 +80,12 @@ class UploadManager
         if ($isMultiple) {
             $fileContainer = new $containerEntityClass();
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
-            $files = $propertyAccessor->getValue($subject, 'files');
+            $files = $propertyAccessor->getValue($subject, $mapping->fileCollectionProperty);
             if ($files instanceof \Traversable) {
                 $files = iterator_to_array($files);
             }
             $files[] = $fileContainer;
-            $propertyAccessor->setValue($subject, 'files', $files);
+            $propertyAccessor->setValue($subject, $mapping->fileCollectionProperty, $files);
             $subject = $fileContainer;
         }
 

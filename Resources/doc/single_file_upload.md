@@ -149,7 +149,7 @@ sherlockode_advanced_form:
     uploader_mappings:
         - 
             id: people                          # a name for the mapping, useful in forms configuration
-            entity: AppBundle\Entity\People     # the mapped entity
+            class: AppBundle\Entity\People      # the mapped entity
             file_property: imageFile            # the name of the entity property to use
             handler: property                   # the upload handler for this mapping
             storage: picture                    # the storage name
