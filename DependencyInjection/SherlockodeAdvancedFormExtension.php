@@ -90,7 +90,10 @@ class SherlockodeAdvancedFormExtension extends Extension
         $resources = $container->hasParameter('twig.form.resources') ?
             $container->getParameter('twig.form.resources') : [];
 
-        array_unshift($resources, '@SherlockodeAdvancedForm/Form/file.html.twig');
+        $resources = array_merge($resources, [
+            '@SherlockodeAdvancedForm/Form/upload_file.html.twig',
+            '@SherlockodeAdvancedForm/Form/dependent_entity.html.twig',
+        ]);
         $container->setParameter('twig.form.resources', $resources);
     }
 }

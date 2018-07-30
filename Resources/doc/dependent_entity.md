@@ -10,17 +10,6 @@ Add the JavaScript file on the pages you want to enable the form:
 <script type="text/javascript" src="{{ asset('bundles/sherlockodeadvancedform/js/dependent-entity.js') }}"></script>
 ```
 
-You will need to use a custom form template for the rendering, if your form is rendered through JavaScript
-(like if you are using a CollectionType with "add" button, in which you use the DependentEntityType)
-
-You can use any method you like, for instance a declaration in the global config is fine:
-
-```
-twig:
-    form_themes:
-        - '@SherlockodeAdvancedForm/Form/DependentEntity.html.twig'
-```
-
 Configuring the form
 --------------------
 
