@@ -117,8 +117,8 @@ class FileType extends AbstractType
             }
         } else {
             if ($subject->getId()) {
-                $imageName = $this->uploadManager->getFilename($mapping, $subject);
-                if (!empty($imageName)) {
+                $fileName = $this->uploadManager->getFilename($mapping, $subject);
+                if (!empty($fileName)) {
                     $view->vars['files'][] = $subject;
                 }
             }
