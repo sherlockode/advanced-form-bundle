@@ -62,8 +62,8 @@ class FileUploadController extends Controller
             }
 
             $data = ['id' => $object->getId()];
-            $routeInfo = $this->mappingManager->getRouteProperty($form->get('mapping')->getData());
-            if ($routeInfo) {
+            $routeInfo = $this->mappingManager->getMapping($form->get('mapping')->getData())->route;
+            if (null !== $routeInfo) {
                 $params = [];
                 foreach ($routeInfo['parameters'] as $key => $parameter) {
                     $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;

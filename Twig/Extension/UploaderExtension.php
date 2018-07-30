@@ -43,7 +43,10 @@ class UploaderExtension extends \Twig_Extension
 
     public function getAsset($type, $id)
     {
-        $routeInfo = $this->mappingManager->getRouteProperty($type);
+        $routeInfo = $this->mappingManager->getMapping($type)->route;
+        if (null === $routeInfo) {
+            return '#';
+        }
         $params = [];
         foreach ($routeInfo['parameters'] as $key => $parameter) {
             $params[$key] = $parameter === '{id}' ? $id : $parameter;
