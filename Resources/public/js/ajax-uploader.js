@@ -46,12 +46,12 @@
                     xhr = new window.XMLHttpRequest(),
                     uploadId = uploadCounter;
                 uploadCounter++;
-                formData.append('afb_upload_temp_file[file]', file);
+                formData.append('afb_upload_file[file]', file);
                 if (mapping) {
-                    formData.append('afb_upload_temp_file[mapping]', mapping);
+                    formData.append('afb_upload_file[mapping]', mapping);
                 }
                 if (subjectId) {
-                    formData.append('afb_upload_temp_file[id]', subjectId);
+                    formData.append('afb_upload_file[id]', subjectId);
                 }
                 filePreview(uploadId, file);
 

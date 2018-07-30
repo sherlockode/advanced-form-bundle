@@ -6,23 +6,17 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class UploadedFileType extends AbstractType
+class TemporaryUploadedFileType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'key',
-                TextType::class
-            )
-            ->add(
-                'token',
-                TextType::class
-            )
+            ->add('key', TextType::class)
+            ->add('token', TextType::class)
         ;
     }
 
@@ -31,6 +25,6 @@ class UploadedFileType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'afb_uploaded_file';
+        return 'afb_temporary_uploaded_file';
     }
 }

@@ -4,7 +4,7 @@ namespace Sherlockode\AdvancedFormBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sherlockode\AdvancedFormBundle\Form\Type\RemoveFileType;
-use Sherlockode\AdvancedFormBundle\Form\Type\UploadTempFileType;
+use Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
@@ -47,7 +47,7 @@ class FileUploadController extends Controller
      */
     public function uploadFileAction(Request $request)
     {
-        $form = $this->createForm(UploadTempFileType::class, [], ['csrf_protection' => false]);
+        $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('file')->getData();
@@ -84,7 +84,7 @@ class FileUploadController extends Controller
      */
     public function uploadTmpAction(Request $request)
     {
-        $form = $this->createForm(UploadTempFileType::class, [], ['csrf_protection' => false]);
+        $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $uploadedFile = $form->get('file')->getData();
