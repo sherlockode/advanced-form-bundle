@@ -8,33 +8,20 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class UploadTempFileType extends AbstractType
+class UploadFileType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add(
-                'file',
-                FileType::class
-            )
-            ->add(
-                'mapping',
-                TextType::class,
-                [
-                    'required' => false
-                ]
-            )
-            ->add(
-                'id',
-                IntegerType::class,
-                [
-                    'required' => false
-                ]
-            )
+            ->add('file', FileType::class)
+            ->add('mapping', TextType::class)
+            ->add('id', IntegerType::class, [
+                'required' => false,
+            ])
         ;
     }
 
@@ -43,6 +30,6 @@ class UploadTempFileType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'afb_upload_temp_file';
+        return 'afb_upload_file';
     }
 }

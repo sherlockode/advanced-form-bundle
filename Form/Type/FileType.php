@@ -138,20 +138,13 @@ class FileType extends AbstractType
         $isMultiple = $this->mappingManager->getMapping($options['mapping'])->multiple;
 
         if ($isMultiple) {
-            $builder->add(
-                'files',
-                CollectionType::class,
-                [
-                    'entry_type' => UploadedFileType::class,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                ]
-            );
+            $builder->add('files', CollectionType::class, [
+                'entry_type' => TemporaryUploadedFileType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+            ]);
         } else {
-            $builder->add(
-                'files',
-                UploadedFileType::class
-            );
+            $builder->add('files', TemporaryUploadedFileType::class);
             $builder->addViewTransformer(new CallbackTransformer(function ($data) {
                 return ['files' => $data];
             }, function ($data) {
