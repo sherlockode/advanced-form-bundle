@@ -26,6 +26,9 @@
 
             function onDropFile(event) {
                 var files = event.dataTransfer.files;
+                onSelectFiles(files);
+            }
+            function onSelectFiles(files) {
                 if (!isMultiple) {
                     if (files.length > 1) {
                         return alert('You can only upload one file');
@@ -175,7 +178,9 @@
                     return false;
                 };
             });
-
+            container.find('.afb_file_input').on('change', function () {
+                onSelectFiles(this.files);
+            });
             container.find('.afb_upload_container').on('click', '.afb_remove_file', function(event) {
                 event.preventDefault();
                 deletePreview($(this));
