@@ -3,9 +3,12 @@
 namespace Sherlockode\AdvancedFormBundle\Manager;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Sherlockode\AdvancedFormBundle\Event\RemoveUploadEvent;
+use Sherlockode\AdvancedFormBundle\Event\UploadEvent;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
 use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -22,6 +25,11 @@ class UploadManager
     private $mappingManager;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * @var StorageInterface
      */
     private $tmpStorage;
@@ -36,15 +44,22 @@ class UploadManager
     /**
      * UploadManager constructor.
      *
-     * @param ObjectManager    $om
-     * @param MappingManager   $mappingManager
-     * @param StorageInterface $tmpStorage
-     * @param string|null      $tmpUploadedFileClass
+     * @param ObjectManager            $om
+     * @param MappingManager           $mappingManager
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param StorageInterface         $tmpStorage
+     * @param string|null              $tmpUploadedFileClass
      */
-    public function __construct(ObjectManager $om, MappingManager $mappingManager, StorageInterface $tmpStorage, $tmpUploadedFileClass = null)
-    {
+    public function __construct(
+        ObjectManager $om,
+        MappingManager $mappingManager,
+        EventDispatcherInterface $eventDispatcher,
+        StorageInterface $tmpStorage,
+        $tmpUploadedFileClass = null
+    ) {
         $this->om = $om;
         $this->mappingManager = $mappingManager;
+        $this->eventDispatcher = $eventDispatcher;
         $this->tmpStorage = $tmpStorage;
         $this->tmpUploadedFileClass = $tmpUploadedFileClass;
     }
@@ -91,6 +106,7 @@ class UploadManager
 
         $handler = $this->getHandler($mapping, $subject);
         $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
+        $this->eventDispatcher->dispatch('afb.post_upload', new UploadEvent($subject, $mapping, $uploadedFile));
 
         $this->om->persist($subject);
         $this->om->flush();
@@ -150,6 +166,7 @@ class UploadManager
             $handler = $this->getHandler($mapping, $subject);
             $field = $mapping->fileProperty;
             $handler->remove($subject, $field);
+            $this->eventDispatcher->dispatch('afb.post_remove_upload', new RemoveUploadEvent($subject, $mapping));
             if ($deleteObject || $mapping->multiple) {
                 $this->om->remove($subject);
             }
