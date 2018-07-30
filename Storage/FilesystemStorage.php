@@ -15,7 +15,9 @@ class FilesystemStorage implements StorageInterface
 
     public function write(File $file)
     {
-        return $file->move($this->dir);
+        $newName = sha1(microtime(true) . rand())  . '.' . $file->guessExtension();
+
+        return $file->move($this->dir, $newName);
     }
 
     public function read($key)
