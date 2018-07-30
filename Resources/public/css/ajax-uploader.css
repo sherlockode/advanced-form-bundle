@@ -11,6 +11,12 @@
     border-color: #000;
     cursor: copy;
 }
+.afb_file_container .afb_dropzone > label {
+    display: block;
+}
+.afb_file_container .afb_dropzone .afb_file_input {
+    display: none;
+}
 
 .afb_file_container .afb_upload_container {
     margin: 20px 0 0;
