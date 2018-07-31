@@ -31,7 +31,7 @@
 }
 
 .afb_file_container .upload-details {
-    height: 25px;
+    min-height: 25px;
     overflow: hidden;
     display: inline-block;
 }
