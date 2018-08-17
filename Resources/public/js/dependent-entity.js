@@ -23,14 +23,15 @@ jQuery(function ($) {
             refreshList($(this).val());
         });
         refreshList(dependOnElement.val(), element.val());
-        function refreshList(key, selected) {
+        function refreshList(key, selectedValue) {
             element.children('option').remove();
             if (element.data('is-optional')) {
                 element.append('<option value=""></option>');
             }
             if (key !== '') {
                 $.each(values[key], function (k, v) {
-                    element.append('<option value="' + k + '"' + (selected === k ? 'selected' : '') + '>' + v + '</option>');
+                    var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(k) !== -1 : selectedValue === k;
+                    element.append('<option value="' + k + '"' + (selected ? 'selected' : '') + '>' + v + '</option>');
                 });
             }
             element.change();
