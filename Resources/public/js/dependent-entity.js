@@ -6,12 +6,13 @@ jQuery(function ($) {
     });
     // for JS-handled forms
     $('body').on('dependent_entity_created', 'select.dependent-entity', function(e) {
-        if (!$(e.target).data('dependent_entity_created')) {
-            $(e.target).data('dependent_entity_created', true);
-            handleElement($(e.target))
-        }
+        handleElement($(e.target))
     });
     function handleElement(element) {
+        if (element.data('dependent_entity_init')) {
+            return;
+        }
+        element.data('dependent_entity_init', true);
         if (element.prop('disabled')) {
             return;
         }
