@@ -29,7 +29,7 @@ jQuery(function ($) {
             if (element.data('is-optional')) {
                 element.append('<option value=""></option>');
             }
-            if (key !== '') {
+            if (key !== '' && values[key]) {
                 $.each(values[key], function (k, v) {
                     var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(k) !== -1 : selectedValue === k;
                     element.append('<option value="' + k + '"' + (selected ? 'selected' : '') + '>' + v + '</option>');
