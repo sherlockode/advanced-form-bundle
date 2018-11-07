@@ -26,9 +26,10 @@ $builder
         'dependOnElementName' => 'owner',
         'mapping' => function (User $user) {
             $books = [];
-            foreach ($u->getBooks() as $book) {
+            foreach ($user->getBooks() as $book) {
                 $books[$book->getId()] = $book->getTitle();
             }
+            
             return [$user->getId(), $books];
         },
     ])
