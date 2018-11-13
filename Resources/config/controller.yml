@@ -1,6 +1,7 @@
 services:
     sherlockode_afb.file_upload.controller:
         class: Sherlockode\AdvancedFormBundle\Controller\FileUploadController
+        public: true
         arguments:
             - '@sherlockode_afb.upload_manager'
             - '@sherlockode_afb.mapping_manager'
