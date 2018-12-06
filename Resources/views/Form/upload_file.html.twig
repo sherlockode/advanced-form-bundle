@@ -1,5 +1,5 @@
 {% block afb_file_widget %}
-    <div class="afb_file_container" {{ block('data_attributes') }}>
+    <div class="afb_file_container" {{ block('data_attributes') }} data-prototype="{{ self.view(imagePreview)|e }}">
         {{ block('dropzone') }}
         {{ block('file_list') }}
     </div>
@@ -38,19 +38,33 @@
     <ul class="{% if imagePreview %}afb_upload_preview{% endif %} afb_upload_container">
         {% for file in files %}
             {% set i = i + 1 %}
-            <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
-                {{ block('file_info') }}
-            </li>
+            {{ block('file_info') }}
         {% endfor %}
     </ul>
 {% endblock %}
 
 {% block file_info %}
-    {% if imagePreview %}
-        <div class="afb_file_preview">
-            <img src="{{ sherlockode_afb_asset(mapping, file.id) }}" />
-        </div>
-    {% endif %}
-    <div class="afb_filename upload-details">{{ sherlockode_afb_filename(mapping, file) }}</div>
-    <a class="afb_remove_file upload-details" href="#" data-upload="{{ i }}" data-id="{{ file.id }}">X</a>
+    {% import _self as self %}
+    {{ self.view(imagePreview, sherlockode_afb_asset(mapping, file.id), sherlockode_afb_filename(mapping, file), i, file.id, uploadMode) }}
 {% endblock %}
+
+{%- macro view(imagePreview, img, imgName, uploadId, dataId, uploadMode) -%}
+    {%- spaceless -%}
+        {% set uploadId = uploadId is null ? '__UPLOAD_ID__' : uploadId %}
+        {% set dataId = uploadId is null ? '__DATA__ID' : dataId %}
+        {% set imgName = imgName is null ? '__FILE_NAME__' : imgName %}
+        {% set img = img is null ? '__TARGET__' : img %}
+
+        <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ uploadId }}" data-upload="{{ uploadId }}">
+            {% if imagePreview %}
+                <div class="afb_file_preview">
+                    <img src="{{ img }}"/>
+                </div>
+            {% endif %}
+            <div class="afb_filename upload-details">{{ imgName }}</div>
+            <a class="afb_remove_file upload-details" href="#" data-upload="{{ uploadId }}" data-id="{{ dataId }}">X
+            </a>
+        </li>
+    {% endspaceless %}
+{% endmacro %}
+

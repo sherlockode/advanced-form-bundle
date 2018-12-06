@@ -14,7 +14,8 @@
                 formName = container.data('name'),
                 subjectId = container.data('id'),
                 formPrefix = container.closest('form').attr('name'),
-                uploadCounter = (container.find('.afb_item').length > 0) ? container.find('.afb_item').length + 1 : 0;
+                uploadCounter = (container.find('.afb_item').length > 0) ? container.find('.afb_item').length + 1 : 0,
+                prototype = container.data('prototype');
 
             function onXhrFail(jqXhr){
                 if (jqXhr.status >= 400 && jqXhr.status < 500) {
@@ -86,29 +87,19 @@
             }
 
             function filePreview(uploadId, file){
-                var dataTmp = uploadMode === 'temporary' ? 'data-tmp="1"' : '';
-
-                var item = $(
-                    '<li class="afb_item afb_preview_' + uploadId + '" data-upload="' + uploadId + '" ' + dataTmp + '>' +
-                    '<div class="afb_filename upload-details">' + file.name + '</div>' +
-                    '<div class="afb_file_progress upload-details"><div></div></div>' +
-                    '<a class="afb_remove_file upload-details" href="#" data-upload="' + uploadId + '">X</a>' +
-                    '</li>'
-                );
-                container.find('.afb_upload_container').append(item);
+                var dataTmp = uploadMode === 'temporary' ? 'data-tmp="1"' : '',
+                    item = prototype.replace(/__UPLOAD_ID__/g, uploadId).replace(/__FILE_NAME__/g, file.name).replace(/__DATA_TMP__/g, dataTmp);
 
                 if (isImgPreview && file.type.match('image.*')) {
                     var reader = new FileReader();
                     reader.onload =
                         function(e) {
-                            item.addClass('afb_preview_item');
-                            item.prepend(
-                                '<div class="afb_file_preview">' +
-                                '<img src="' + e.target.result + '" />' +
-                                '</div>'
-                            );
+                            item = item.replace(/__TARGET__/g, e.target.result);
+                            container.find('.afb_upload_container').append(item);
                         };
                     reader.readAsDataURL(file);
+                } else {
+                    container.find('.afb_upload_container').append(item);
                 }
             }
 
