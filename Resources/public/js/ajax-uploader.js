@@ -187,8 +187,8 @@
             });
         });
     };
-
-    $('.afb_file_container').AfbAjaxUploader();
 }(jQuery));
 
-
+jQuery(function ($) {
+    $('.afb_file_container').AfbAjaxUploader();
+});
