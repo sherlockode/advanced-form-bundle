@@ -1,5 +1,10 @@
 {% block afb_file_widget %}
-    <div class="afb_file_container" {{ block('data_attributes') }}>
+    {% import _self as self %}
+    <div class="afb_file_container" {{ block('data_attributes') }}
+        {% with {progressBar: true, img: null, fileName:null, uploadId: null, file: null} %}
+        data-prototype="{{ block('file_info')|e }}"
+        {% endwith %}
+    >
         {{ block('dropzone') }}
         {{ block('file_list') }}
     </div>
@@ -38,19 +43,29 @@
     <ul class="{% if imagePreview %}afb_upload_preview{% endif %} afb_upload_container">
         {% for file in files %}
             {% set i = i + 1 %}
-            <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
-                {{ block('file_info') }}
-            </li>
+            {% with {progressBar: false, img: sherlockode_afb_asset(mapping, file.id), fileName: sherlockode_afb_filename(mapping, file), uploadId: i, file: file} %}
+            {{ block('file_info') }}
+            {% endwith %}
         {% endfor %}
     </ul>
 {% endblock %}
 
 {% block file_info %}
-    {% if imagePreview %}
-        <div class="afb_file_preview">
-            <img src="{{ sherlockode_afb_asset(mapping, file.id) }}" />
-        </div>
-    {% endif %}
-    <div class="afb_filename upload-details">{{ sherlockode_afb_filename(mapping, file) }}</div>
-    <a class="afb_remove_file upload-details" href="#" data-upload="{{ i }}" data-id="{{ file.id }}">X</a>
+    {% set uploadId = uploadId is null ? '__UPLOAD_ID__' : uploadId %}
+    {% set dataId = file and file.id ? file.id : '__DATA_ID__' %}
+    {% set fileName = fileName is null ? '__FILE_NAME__' : fileName %}
+    {% set img = img is null ? '__FILE_URL__' : img %}
+
+    <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ uploadId }}" data-upload="{{ uploadId }}">
+        {% if imagePreview %}
+            <div class="afb_file_preview">
+                <img src="{{ img }}"/>
+            </div>
+        {% endif %}
+        <div class="afb_filename upload-details">{{ fileName }}</div>
+        {% if progressBar %}
+            <div class="afb_file_progress upload-details"><div></div></div>
+        {% endif %}
+        <a class="afb_remove_file upload-details" href="#" data-upload="{{ uploadId }}" data-id="{{ dataId }}">X</a>
+    </li>
 {% endblock %}
