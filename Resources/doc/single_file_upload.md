@@ -147,8 +147,7 @@ sherlockode_advanced_form:
             filesystem:  # type of storage
                 path: '%kernel.project_dir%/var/uploads/pictures'
     uploader_mappings:
-        - 
-            id: people                          # a name for the mapping, useful in forms configuration
+        people:                                 # a name for the mapping, useful in forms configuration
             class: App\Entity\People            # the mapped entity
             file_property: imageFile            # the name of the entity property to use
             handler: property                   # the upload handler for this mapping
