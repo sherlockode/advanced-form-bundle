@@ -189,8 +189,7 @@ sherlockode_advanced_form:
             filesystem:
                 path: '%kernel.project_dir%/var/uploads/picture'
     uploader_mappings:
-        - 
-            id: product_picture
+        product_picture:
             class: App\Entity\Product
             multiple: true                        # this option declares the OneToMany relationships
             file_class: App\Entity\Picture        # you need to indicate the class holding the picture data
