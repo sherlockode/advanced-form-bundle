@@ -14,7 +14,7 @@ define the entity mapping there.
 ```php
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFile as BaseUploadedFile;
@@ -50,7 +50,7 @@ Configuration
 The name of the entity and the target directory for the file upload must be provided in the configuration:
 ```yaml
 sherlockode_advanced_form:
-    tmp_uploaded_file_class: AppBundle\Entity\UploadedFile
+    tmp_uploaded_file_class: App\Entity\UploadedFile
     tmp_uploaded_file_dir: '%kernel.project_dir%/var/uploads/sherlockode_afb_tmp'
 ```
 

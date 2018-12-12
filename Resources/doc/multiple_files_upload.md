@@ -6,7 +6,7 @@ Let's assume we have a product entity with several pictures. We have to create t
 ```php
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -29,7 +29,7 @@ class Picture
     private $imageName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Project", inversedBy="files")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Project", inversedBy="files")
      */
     private $product;
 
@@ -87,7 +87,7 @@ class Picture
 ```php
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -114,7 +114,7 @@ class Product
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Picture", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Picture", cascade={"persist"})
      */
     private $pictures;
 
@@ -191,9 +191,9 @@ sherlockode_advanced_form:
     uploader_mappings:
         - 
             id: product_picture
-            class: AppBundle\Entity\Product
+            class: App\Entity\Product
             multiple: true                        # this option declares the OneToMany relationships
-            file_class: AppBundle\Entity\Picture  # you need to indicate the class holding the picture data
+            file_class: App\Entity\Picture        # you need to indicate the class holding the picture data
             file_property: imageFile              # property used in the picture object to hold the filename
             file_collection_property: pictures    # property in the Product targeting the picture collection
             handler: property
@@ -239,7 +239,7 @@ Then the controller:
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Product;
+use App\Entity\Product;
 use AppBundle\Form\ProductType;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

@@ -6,7 +6,7 @@ To create a single file upload form, we have to set an entity with Vich uploader
 ```php
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -149,7 +149,7 @@ sherlockode_advanced_form:
     uploader_mappings:
         - 
             id: people                          # a name for the mapping, useful in forms configuration
-            class: AppBundle\Entity\People      # the mapped entity
+            class: App\Entity\People            # the mapped entity
             file_property: imageFile            # the name of the entity property to use
             handler: property                   # the upload handler for this mapping
             storage: picture                    # the storage name
@@ -168,7 +168,7 @@ We can now create our form:
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\People;
+use App\Entity\People;
 use Sherlockode\AdvancedFormBundle\Form\Type\FileType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -216,10 +216,10 @@ You can then define a simple controller using the form:
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\People;
+use App\Entity\People;
 use AppBundle\Form\PeopleType;
 use Doctrine\Common\Persistence\ObjectManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
