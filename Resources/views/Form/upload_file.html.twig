@@ -33,7 +33,7 @@
 
 {% block dropzone %}
     <div class="afb_dropzone"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
-        <label for="afb_file_input-{{ id }}">{{ label|trans({}, translation_domain) }}</label>
+        <label for="afb_file_input-{{ id }}">{{ (dropzoneLabel ?? label)|trans({}, translation_domain) }}</label>
         <input type="file" {% if multiple %}multiple{% endif %} class="afb_file_input" id="afb_file_input-{{ id }}"/>
     </div>
 {% endblock %}

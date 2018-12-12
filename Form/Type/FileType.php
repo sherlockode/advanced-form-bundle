@@ -82,6 +82,7 @@ class FileType extends AbstractType
             },
             'compound' => true,
             'image_preview' => false,
+            'dropzone_label' => null,
         ]);
         $resolver->setAllowedValues('upload_mode', ['immediate', 'temporary']);
     }
@@ -106,6 +107,7 @@ class FileType extends AbstractType
         $view->vars['imagePreview'] = $options['image_preview'];
         $view->vars['uploadMode'] = $options['upload_mode'];
         $view->vars['files'] = [];
+        $view->vars['dropzoneLabel'] = $options['dropzone_label'];
 
         if ($isMultiple) {
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
