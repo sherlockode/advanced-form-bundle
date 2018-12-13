@@ -36,9 +36,45 @@ $builder
 ;
 ```
 
-The "dependOnElementName" option indicates which form field will be watched to decide the list of choices
+The `dependOnElementName` option indicates which form field will be watched to decide the list of choices
 we will display in the dependent field.
 
-The mapping option provides, for each value of the parent field, the list of option made available.
+The `mapping` option provides, for each value of the parent field, the list of option made available.
 The return value must be a two-entries array in which the first entry is the parent option value (here a User id) and
-the second one is an array with children option list (value as the key and label for the dropdown as the value) .
+the second one is an array with children option list (value as the key and label for the dropdown as the value).
+
+### Using AJAX
+
+Alternatively, you can provide an URL to be called through AJAX when the first dropdown is changed, this URL
+is expected to return the list of options for the second dropdown. This can be interesting if you don't want the
+full mapping to be dumped in the HTML content of your page, when you have lots of data for instance.
+The `ajax_url` option is designed to do so and has priority over the `mapping` option.
+
+```php
+$builder
+    ->add('book', DependentEntityType::class, [
+        'class' => Book::class,
+        'dependOnElementName' => 'owner',
+        'ajax_url' => $urlGenerator->generate('my_route'),
+    ]);
+```
+
+In this case, the URL at `my_route` will be called every time a user changes the value of the first dropdown.
+A special GET parameter `id` will be in the request in order for the controller to retrieve the Entity object.
+
+With the User/Book example from above you would write a controller like this:
+
+```php
+/**
+ * @Route("/user-books", name="my_route")
+ */
+public function userBooksAction(Request $request)
+{
+    $this->getDoctrine()->getRepository(User::class)->find($request->get('id'));
+    $options = [];
+    foreach ($user->getBooks() as $book) {
+        $options[$book->getId()] = $book->getName();
+    }
+    return new JsonReponse($options);
+}
+```

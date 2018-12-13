@@ -22,7 +22,10 @@ class DependentEntityType extends AbstractType
     {
         $resolver
             ->setRequired('dependOnElementName')
-            ->setRequired('mapping')
+            ->setDefaults([
+                'ajax_url' => null,
+                'mapping' => null,
+            ])
         ;
     }
 
@@ -30,6 +33,24 @@ class DependentEntityType extends AbstractType
     {
         parent::buildView($view, $form, $options);
         $depend = $this->getDependentElement($view, $options['dependOnElementName']);
+
+        $mapping = $this->processMapping($options, $form);
+
+        $class = isset($view->vars['attr']['class']) ? $view->vars['attr']['class'] : '';
+        $class = $class . ' ' . 'dependent-entity';
+        $view->vars['attr'] = array_merge($view->vars['attr'], [
+            'class' => $class,
+            'data-depend-on-element' => $depend->vars['id'],
+            'data-mapping' => json_encode($mapping),
+            'data-ajax-url' => $options['ajax_url'],
+        ]);
+    }
+
+    private function processMapping(array $options, FormInterface $form)
+    {
+        if ($options['mapping'] === null) {
+            return [];
+        }
 
         if (is_array($options['mapping'])) {
             $mapping = $options['mapping'];
@@ -50,13 +71,7 @@ class DependentEntityType extends AbstractType
             );
         }
 
-        $class = isset($view->vars['attr']['class']) ? $view->vars['attr']['class'] : '';
-        $class = $class . ' ' . 'dependent-entity';
-        $view->vars['attr'] = array_merge($view->vars['attr'], [
-            'class' => $class,
-            'data-depend-on-element' => $depend->vars['id'],
-            'data-mapping' => json_encode($mapping),
-        ]);
+        return $mapping;
     }
 
 

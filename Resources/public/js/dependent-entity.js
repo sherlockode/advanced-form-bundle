@@ -29,13 +29,30 @@ jQuery(function ($) {
             if (element.data('is-optional')) {
                 element.append('<option value=""></option>');
             }
-            if (key !== '' && values[key]) {
-                $.each(values[key], function (k, v) {
-                    var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(k) !== -1 : selectedValue === k;
-                    element.append('<option value="' + k + '"' + (selected ? 'selected' : '') + '>' + v + '</option>');
-                });
+
+            var ajaxUrl = element.data('ajax-url');
+            if (ajaxUrl) {
+                if (key !== '') {
+                    $.get(ajaxUrl, {id: key},function (values) {
+                        fillSelectElement(element, values, selectedValue);
+                        element.change();
+                    });
+                } else {
+                    element.change();
+                }
+            } else {
+                if (key !== '' && values[key]) {
+                    fillSelectElement(element, values[key], selectedValue);
+                }
+                element.change();
             }
-            element.change();
+        }
+
+        function fillSelectElement(element, values, selectedValue) {
+            $.each(values, function (k, v) {
+                var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(k) !== -1 : selectedValue === k;
+                element.append('<option value="' + k + '"' + (selected ? 'selected' : '') + '>' + v + '</option>');
+            });
         }
     }
 });
