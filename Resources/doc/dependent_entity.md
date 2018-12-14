@@ -27,7 +27,7 @@ $builder
         'mapping' => function (User $user) {
             $books = [];
             foreach ($user->getBooks() as $book) {
-                $books[$book->getId()] = $book->getTitle();
+                $books[] => ['id' => $book->getId(), 'label' => $book->getTitle()];
             }
             
             return [$user->getId(), $books];
@@ -41,7 +41,7 @@ we will display in the dependent field.
 
 The `mapping` option provides, for each value of the parent field, the list of option made available.
 The return value must be a two-entries array in which the first entry is the parent option value (here a User id) and
-the second one is an array with children option list (value as the key and label for the dropdown as the value).
+the second one is an array of children option data (associative array with `id` and `label` fields).
 
 ### Using AJAX
 
@@ -73,7 +73,7 @@ public function userBooksAction(Request $request)
     $this->getDoctrine()->getRepository(User::class)->find($request->get('id'));
     $options = [];
     foreach ($user->getBooks() as $book) {
-        $options[$book->getId()] = $book->getName();
+        $options[] = ['id' => $book->getId(), 'label' => $book->getName()];
     }
     return new JsonReponse($options);
 }
