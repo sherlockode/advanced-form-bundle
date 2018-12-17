@@ -50,7 +50,8 @@ jQuery(function ($) {
 
         function fillSelectElement(element, values, selectedValue) {
             $.each(values, function (k, v) {
-                var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(v.id) !== -1 : selectedValue === v.id;
+                var valueId = v.id + ''; // cast to string
+                var selected = Array.isArray(selectedValue) ? selectedValue.indexOf(valueId) !== -1 : selectedValue === valueId;
                 element.append('<option value="' + v.id + '"' + (selected ? 'selected' : '') + '>' + v.label + '</option>');
             });
         }
