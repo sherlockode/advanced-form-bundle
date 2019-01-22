@@ -98,7 +98,7 @@
                     var reader = new FileReader();
                     reader.onload =
                         function(e) {
-                            item = item.replace(/__FILE_URL__/g, e.target.result);
+                            item.html(item.html().replace(/__FILE_URL__/g, e.target.result));
                             container.find('.afb_upload_container').append(item);
                         };
                     reader.readAsDataURL(file);
