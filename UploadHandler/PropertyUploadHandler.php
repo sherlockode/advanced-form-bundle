@@ -30,10 +30,11 @@ class PropertyUploadHandler implements UploadHandlerInterface
 
     public function upload($subject, $attribute, File $file)
     {
-        $newFile = $this->getStorage($subject, $attribute)->write($file);
+        $key = sha1(microtime(true) . rand())  . '.' . $file->guessExtension();
+        $this->getStorage($subject, $attribute)->write($key, file_get_contents($file->getPathname()));
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $propertyAccessor->setValue($subject, $attribute, $newFile->getBasename());
+        $propertyAccessor->setValue($subject, $attribute, $key);
     }
 
     public function remove($subject, $attribute)
