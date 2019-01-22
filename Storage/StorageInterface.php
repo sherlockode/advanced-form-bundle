@@ -2,26 +2,27 @@
 
 namespace Sherlockode\AdvancedFormBundle\Storage;
 
-use Symfony\Component\HttpFoundation\File\File;
-
 interface StorageInterface
 {
     /**
-     * @param $key
+     * @param string $key
      *
-     * @return File
+     * @return string
      */
     public function read($key);
 
     /**
-     * @param File $file
+     * @param string  $key
+     * @param string  $data
      *
-     * @return File
+     * @return bool
      */
-    public function write(File $file);
+    public function write($key, $data);
 
     /**
-     * @param $key
+     * @param string $key
+     *
+     * @return bool
      */
     public function remove($key);
 }

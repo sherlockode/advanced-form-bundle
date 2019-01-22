@@ -122,14 +122,16 @@ class UploadManager
      */
     public function uploadTemporary(UploadedFile $uploadedFile)
     {
-        $newFile = $this->tmpStorage->write($uploadedFile);
+        $key = sha1(microtime(true) . rand())  . '.' . $uploadedFile->guessExtension();
+        $this->tmpStorage->write($key, file_get_contents($uploadedFile->getPathname()));
 
         $class = $this->tmpUploadedFileClass;
         if (!$class || !class_exists($class)) {
             throw new \Exception('The class to use for temporary file upload has not been defined');
         }
+        /** @var TemporaryUploadedFileInterface $obj */
         $obj = new $class();
-        $obj->setKey($newFile->getFilename());
+        $obj->setKey($key);
         $obj->setToken(rand());
 
         $this->om->persist($obj);

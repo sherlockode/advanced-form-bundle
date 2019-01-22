@@ -2,8 +2,6 @@
 
 namespace Sherlockode\AdvancedFormBundle\Storage;
 
-use Symfony\Component\HttpFoundation\File\File;
-
 class FilesystemStorage implements StorageInterface
 {
     private $dir;
@@ -13,20 +11,18 @@ class FilesystemStorage implements StorageInterface
         $this->dir = $dir;
     }
 
-    public function write(File $file)
+    public function write($key, $data)
     {
-        $newName = sha1(microtime(true) . rand())  . '.' . $file->guessExtension();
-
-        return $file->move($this->dir, $newName);
+        return file_put_contents($this->dir . '/' . $key, $data);
     }
 
     public function read($key)
     {
-        return new File($this->dir . '/' . $key);
+        return file_get_contents($this->dir . '/' . $key);
     }
 
     public function remove($key)
     {
-        unlink($this->dir  .'/' . $key);
+        return unlink($this->dir  .'/' . $key);
     }
 }

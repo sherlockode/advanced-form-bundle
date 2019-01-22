@@ -2,7 +2,6 @@
 
 namespace Sherlockode\AdvancedFormBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sherlockode\AdvancedFormBundle\Form\Type\RemoveFileType;
 use Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
 class FileUploadController extends Controller
 {
@@ -124,30 +123,24 @@ class FileUploadController extends Controller
     {
         $fileInfo = $this->getDoctrine()->getRepository($this->tmpUploadClass)->findOneBy(['token' => $token]);
 
-        $file = null;
-
-        $file = $this->get('sherlockode_afb.storage.tmp_storage')->read($fileInfo->getKey());
-        $stream = fopen($file, 'rb');
+        $data = $this->get('sherlockode_afb.storage.tmp_storage')->read($fileInfo->getKey());
 
         return $this->createDownloadResponse(
-            $stream,
-            $fileInfo->getKey(),
-            null === $file ? null : $file->getMimeType()
+            $data,
+            $fileInfo->getKey()
         );
     }
 
     /**
-     * @param resource $stream
-     * @param string   $filename
-     * @param string   $mimeType
+     * @param string $data
+     * @param string $filename
+     * @param string $mimeType
      *
-     * @return StreamedResponse
+     * @return Response
      */
-    private function createDownloadResponse($stream, $filename, $mimeType = 'application/octet-stream')
+    private function createDownloadResponse($data, $filename, $mimeType = 'application/octet-stream')
     {
-        $response = new StreamedResponse(function () use ($stream) {
-            stream_copy_to_stream($stream, fopen('php://output', 'wb'));
-        });
+        $response = new Response($data);
 
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
