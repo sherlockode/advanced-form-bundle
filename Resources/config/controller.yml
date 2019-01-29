@@ -6,3 +6,4 @@ services:
             - '@sherlockode_afb.upload_manager'
             - '@sherlockode_afb.mapping_manager'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
+            - '@sherlockode_afb.storage.tmp_storage'

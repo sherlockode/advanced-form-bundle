@@ -7,14 +7,15 @@ use Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 
-class FileUploadController extends Controller
+class FileUploadController extends AbstractController
 {
     /**
      * @var UploadManager
@@ -31,11 +32,25 @@ class FileUploadController extends Controller
      */
     private $tmpUploadClass;
 
-    public function __construct($uploadManager, $mappingManager, $tmpUploadClass)
+    /**
+     * @var StorageInterface
+     */
+    private $tmpStorage;
+
+    /**
+     * FileUploadController constructor.
+     *
+     * @param UploadManager    $uploadManager
+     * @param MappingManager   $mappingManager
+     * @param string           $tmpUploadClass
+     * @param StorageInterface $tmpStorage
+     */
+    public function __construct($uploadManager, $mappingManager, $tmpUploadClass, $tmpStorage)
     {
         $this->uploadManager = $uploadManager;
         $this->mappingManager = $mappingManager;
         $this->tmpUploadClass = $tmpUploadClass;
+        $this->tmpStorage = $tmpStorage;
     }
 
     /**
@@ -123,7 +138,7 @@ class FileUploadController extends Controller
     {
         $fileInfo = $this->getDoctrine()->getRepository($this->tmpUploadClass)->findOneBy(['token' => $token]);
 
-        $data = $this->get('sherlockode_afb.storage.tmp_storage')->read($fileInfo->getKey());
+        $data = $this->tmpStorage->read($fileInfo->getKey());
 
         return $this->createDownloadResponse(
             $data,
