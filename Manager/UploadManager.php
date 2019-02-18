@@ -133,6 +133,7 @@ class UploadManager
         $obj = new $class();
         $obj->setKey($key);
         $obj->setToken(rand());
+        $obj->setFilename($uploadedFile->getClientOriginalName());
 
         $this->om->persist($obj);
         $this->om->flush($obj);

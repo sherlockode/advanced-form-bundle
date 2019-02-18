@@ -3,12 +3,10 @@
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\Common\Collections\Collection;
-use Sherlockode\AdvancedFormBundle\Form\DataTransformer\TemporaryUploadFileTransformer;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -137,24 +135,25 @@ class FileType extends AbstractType
             return;
         }
 
-        $isMultiple = $this->mappingManager->getMapping($options['mapping'])->multiple;
+        $mapping = $this->mappingManager->getMapping($options['mapping']);
+        $isMultiple = $mapping->multiple;
 
         if ($isMultiple) {
-            $builder->add('files', CollectionType::class, [
-                'entry_type' => TemporaryUploadedFileType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
+            $builder->add('files', TemporaryFileCollectionType::class, [
+                'entry_options' => ['temporary_path' => $this->temporaryPath],
+                'mapping' => $mapping,
             ]);
-        } else {
-            $builder->add('files', TemporaryUploadedFileType::class);
-            $builder->addViewTransformer(new CallbackTransformer(function ($data) {
-                return ['files' => $data];
-            }, function ($data) {
-                return $data['files'];
-            }));
-        }
 
-        $builder->get('files')->addViewTransformer(new TemporaryUploadFileTransformer($isMultiple, $this->temporaryPath));
+        } else {
+            $builder->add('files', TemporaryUploadedFileType::class, [
+                'temporary_path' => $this->temporaryPath,
+            ]);
+        }
+        $builder->addViewTransformer(new CallbackTransformer(function ($data) {
+            return ['files' => $data];
+        }, function ($data) {
+            return $data['files'];
+        }));
     }
 
     /**

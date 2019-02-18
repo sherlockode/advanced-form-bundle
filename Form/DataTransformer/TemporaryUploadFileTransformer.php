@@ -2,28 +2,27 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\DataTransformer;
 
+use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Class TemporaryUploadFileTransformer
+ *
+ * Transforms a TemporaryUploadedFileInterface into a simulated UploadedFile instance
+ */
 class TemporaryUploadFileTransformer implements DataTransformerInterface
 {
-    /**
-     * @var bool
-     */
-    private $isMultiple;
-
     /**
      * @var string
      */
     private $path;
 
     /**
-     * @param bool   $isMultiple
      * @param string $path
      */
-    public function __construct($isMultiple, $path)
+    public function __construct($path)
     {
-        $this->isMultiple = (bool) $isMultiple;
         $this->path = $path;
     }
 
@@ -43,41 +42,17 @@ class TemporaryUploadFileTransformer implements DataTransformerInterface
      */
     public function reverseTransform($data)
     {
-        if (!$data) {
+        if (!$data || !$data instanceof TemporaryUploadedFileInterface) {
             return null;
         }
 
-        if (is_array($data) && count($data) > 0) {
-            if ($this->isMultiple) {
-                $result = [];
-                foreach ($data as $d) {
-                    if (!empty($d['pathname']) && !empty($d['mime-type']) && !empty($d['size'])) {
-                        $result[] = new UploadedFile(
-                            $this->path . '/' . $data['key'],
-                            'myfile',
-                            null,
-                            null,
-                            null,
-                            true
-                        );
-                    }
-                }
-
-                return $result;
-            }
-
-            if (!empty($data['key'])) {
-                return new UploadedFile(
-                    $this->path . '/' . $data['key'],
-                    'myfile',
-                    null,
-                    null,
-                    null,
-                    true
-                );
-            }
-        }
-
-        return null;
+        return new UploadedFile(
+            $this->path . '/' . $data->getKey(),
+            $data->getFilename(),
+            null,
+            null,
+            null,
+            true
+        );
     }
 }

@@ -23,4 +23,14 @@ interface TemporaryUploadedFileInterface
      * @param string $token
      */
     public function setToken($token);
+
+    /**
+     * @return string
+     */
+    public function getFilename();
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename($filename);
 }
