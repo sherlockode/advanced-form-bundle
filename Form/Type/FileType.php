@@ -83,6 +83,7 @@ class FileType extends AbstractType
             'compound' => true,
             'image_preview' => false,
             'dropzone_label' => null,
+            'async' => true,
         ]);
         $resolver->setAllowedValues('upload_mode', ['immediate', 'temporary']);
     }
@@ -101,6 +102,7 @@ class FileType extends AbstractType
         $view->vars['removeUriPath'] = $options['remove_uri_path'];
         $view->vars['removeTmpUriPath'] = $options['remove_tmp_uri_path'];
         $view->vars['multiple'] = $isMultiple;
+        $view->vars['async'] = $options['async'];
         $view->vars['jsCallback'] = $options['js_callback'];
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];

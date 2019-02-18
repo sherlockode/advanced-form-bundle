@@ -15,7 +15,8 @@
                 subjectId = container.data('id'),
                 formPrefix = container.closest('form').attr('name'),
                 uploadCounter = container.find('.afb_item').length > 0 ? container.find('.afb_item').length + 1 : 0,
-                prototype = container.data('prototype');
+                prototype = container.data('prototype'),
+                isAsync = container.data('async');
 
             function onXhrFail(jqXhr){
                 if (jqXhr.status >= 400 && jqXhr.status < 500) {
@@ -37,12 +38,25 @@
                         container.find('.afb_dropzone').hide();
                     }
                 }
-                for (var i = 0; i < files.length; i++) {
-                    uploadFile(files[i]);
+                if (isAsync) {
+                    for (var i = 0; i < files.length; i++) {
+                        uploadFile(files[i]);
+                    }
+                } else {
+
+                    var next = function (i) {
+                        if ("undefined" === typeof(files[i])) {
+                            return;
+                        }
+                        uploadFile(files[i], function () {
+                            next(i + 1);
+                        });
+                    };
+                    next(0);
                 }
             }
 
-            function uploadFile(file){
+            function uploadFile(file, callback){
                 var formData = new FormData(),
                     xhr = new window.XMLHttpRequest(),
                     uploadId = uploadCounter;
@@ -82,6 +96,9 @@
                     }
                     if (uploadMode === 'temporary') {
                         addHiddenFields($('.afb_preview_' + uploadId), response);
+                    }
+                    if ("function" === typeof(callback)) {
+                        callback();
                     }
                 }).fail(onXhrFail);
             }
