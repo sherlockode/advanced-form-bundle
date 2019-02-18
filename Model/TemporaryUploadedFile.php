@@ -18,6 +18,11 @@ class TemporaryUploadedFile implements TemporaryUploadedFileInterface
     protected $token;
 
     /**
+     * @var string
+     */
+    protected $filename;
+
+    /**
      * @return string
      */
     public function getKey()
@@ -53,6 +58,24 @@ class TemporaryUploadedFile implements TemporaryUploadedFileInterface
     public function setToken($token)
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param string $filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
 
         return $this;
     }
