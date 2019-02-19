@@ -57,12 +57,13 @@
     {% set uploadId = uploadId is null ? '__UPLOAD_ID__' : uploadId %}
     {% set dataId = file and file.id ? file.id : '__DATA_ID__' %}
     {% set fileName = fileName is null ? '__FILE_NAME__' : fileName %}
-    {% set img = img is null ? '__FILE_URL__' : img %}
 
     <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ uploadId }}" data-upload="{{ uploadId }}">
         {% if imagePreview %}
             <div class="afb_file_preview">
-                <img src="{{ img }}"/>
+                {% if img is not null %}
+                    <img src="{{ img }}"/>
+                {% endif %}
             </div>
         {% endif %}
         <div class="afb_filename upload-details">{{ fileName }}</div>
