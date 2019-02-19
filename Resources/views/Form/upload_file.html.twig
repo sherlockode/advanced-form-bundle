@@ -20,6 +20,9 @@
     {% if multiple %}
         data-multiple="true"
     {% endif %}
+    {% if async %}
+        data-async="true"
+    {% endif %}
     {% if subject.id %}
         data-id="{{ subject.id|e }}"
     {% endif %}
