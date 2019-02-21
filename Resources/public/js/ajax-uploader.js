@@ -115,7 +115,12 @@
                     var reader = new FileReader();
                     reader.onload =
                         function(e) {
-                            item.html(item.html().replace(/__FILE_URL__/g, e.target.result));
+                            var img = item.find('.afb_file_preview img');
+                            if (0 === img.length) {
+                                img = $('img');
+                                item.find('.afb_file_preview').append(img);
+                            }
+                            img.attr('src', e.target.result);
                             container.find('.afb_upload_container').append(item);
                         };
                     reader.readAsDataURL(file);
