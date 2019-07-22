@@ -1,13 +1,14 @@
 jQuery(function ($) {
     'use strict';
 
-    $('select.dependent-entity').each(function() {
-        handleElement($(this));
-    });
     // for JS-handled forms
     $('body').on('dependent_entity_created', 'select.dependent-entity', function(e) {
         handleElement($(e.target))
     });
+    $('select.dependent-entity').each(function() {
+        handleElement($(this));
+    });
+
     function handleElement(element) {
         if (element.data('dependent_entity_init')) {
             return;
