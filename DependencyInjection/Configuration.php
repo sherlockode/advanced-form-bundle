@@ -13,8 +13,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $tb = new TreeBuilder();
-        $root = $tb->root('sherlockode_advanced_form');
+        $tb = new TreeBuilder('sherlockode_advanced_form');
+        // BC layer for symfony/config < 4.2
+        $root = \method_exists($tb, 'getRootNode') ? $tb->getRootNode() : $tb->root('sherlockode_advanced_form');
 
         $this->addStorageSection($root);
         $this->addUploaderSection($root);
