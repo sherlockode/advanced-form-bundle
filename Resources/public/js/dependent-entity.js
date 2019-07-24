@@ -31,7 +31,7 @@ jQuery(function ($) {
                 element.append('<option value=""></option>');
             }
 
-            var ajaxUrl = element.data('ajax-url');
+            var ajaxUrl = element.data('dependent-ajax-url');
             if (ajaxUrl) {
                 if (key !== '') {
                     $.get(ajaxUrl, {id: key},function (values) {

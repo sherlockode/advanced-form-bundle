@@ -42,7 +42,7 @@ class DependentEntityType extends AbstractType
             'class' => $class,
             'data-depend-on-element' => $depend->vars['id'],
             'data-mapping' => json_encode($mapping),
-            'data-ajax-url' => $options['ajax_url'],
+            'data-dependent-ajax-url' => $options['ajax_url'],
         ]);
     }
 
