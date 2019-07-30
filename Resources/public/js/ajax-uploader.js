@@ -117,7 +117,7 @@
                         function(e) {
                             var img = item.find('.afb_file_preview img');
                             if (0 === img.length) {
-                                img = $('img');
+                                img = $(document.createElement('img'));
                                 item.find('.afb_file_preview').append(img);
                             }
                             img.attr('src', e.target.result);
