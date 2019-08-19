@@ -4,6 +4,7 @@
         return this.each(function(){
             var container = $(this),
                 uploadCallback = container.data('callback'),
+                uploadErrorCallback = container.data('errorcallback'),
                 isImgPreview = container.data('imgpreview'),
                 uploadMode = container.data('uploadMode'),
                 isMultiple = container.data('multiple'),
@@ -19,11 +20,15 @@
                 isAsync = container.data('async');
 
             function onXhrFail(jqXhr){
+                var text = 'An error happened';
                 if (jqXhr.status >= 400 && jqXhr.status < 500) {
-                    alert(jqXhr.responseText);
-                } else {
-                    alert('An error happened');
+                    if (jqXhr.responseJSON && jqXhr.responseJSON.error) {
+                        text = jqXhr.responseJSON.error;
+                    } else {
+                        text = jqXhr.responseText;
+                    }
                 }
+                alert(text);
             }
 
             function onDropFile(event) {
@@ -68,8 +73,8 @@
                 if (subjectId) {
                     formData.append('afb_upload_file[id]', subjectId);
                 }
-                filePreview(uploadId, file);
 
+                filePreview(uploadId, file);
                 $.ajax({
                     xhr: function() {
                         xhr.upload.addEventListener("progress", function(evt) {
@@ -88,19 +93,30 @@
                     if (uploadCallback && "function" === typeof(window[uploadCallback])) {
                         window[uploadCallback].call(null, response);
                     }
+                    var previewElement = $('.afb_preview_' + uploadId);
+                    previewElement.find('.afb_file_progress').addClass('afb_file_upload_success');
                     if (response.path && isImgPreview && file.type.match('image.*')) {
-                        $('.afb_preview_' + uploadId).find('img').attr('src', response.path);
+                        previewElement.find('img').attr('src', response.path);
                     }
                     if (response.id) {
-                        $('.afb_preview_' + uploadId).find('.afb_remove_file').data('id', response.id);
+                        previewElement.find('.afb_remove_file').data('id', response.id);
                     }
                     if (uploadMode === 'temporary') {
-                        addHiddenFields($('.afb_preview_' + uploadId), response);
+                        addHiddenFields(previewElement, response);
                     }
                     if ("function" === typeof(callback)) {
                         callback();
                     }
-                }).fail(onXhrFail);
+                }).fail(function(response) {
+                    if (uploadErrorCallback && "function" === typeof(window[uploadErrorCallback])) {
+                        window[uploadErrorCallback].call(null, response);
+                    } else {
+                        onXhrFail(response);
+                    }
+                    var previewElement = $('.afb_preview_' + uploadId);
+                    previewElement.find('.afb_file_progress').addClass('afb_file_upload_error');
+                    deletePreview(previewElement.find('.afb_remove_file'), false);
+                });
             }
 
             function filePreview(uploadId, file){
@@ -145,16 +161,18 @@
                 }
             }
 
-            function deletePreview(element){
-                if (isMultiple) {
-                    var pictureId = element.data('id');
-                    if (pictureId) {
-                        removeFile(pictureId);
+            function deletePreview(element, removeFromServer){
+                if (removeFromServer) {
+                    if (isMultiple) {
+                        var pictureId = element.data('id');
+                        if (pictureId) {
+                            removeFile(pictureId);
+                        }
+                    } else if (element.closest('.afb_item').data('tmp')) {
+                        removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
+                    } else {
+                        removeFile(subjectId, false);
                     }
-                } else if (element.closest('.afb_item').data('tmp')) {
-                    removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
-                } else {
-                    removeFile(subjectId, false);
                 }
                 element.closest('.afb_item').remove();
                 if (container.find('.afb_item').length === 0) {
@@ -200,7 +218,7 @@
             });
             container.find('.afb_upload_container').on('click', '.afb_remove_file', function(event) {
                 event.preventDefault();
-                deletePreview($(this));
+                deletePreview($(this), true);
             });
         });
     };
