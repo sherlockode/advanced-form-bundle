@@ -1,0 +1,2 @@
+upload:
+    error_max_size: Le fichier ne doit pas dépasser %maxSize%

@@ -8,6 +8,15 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 class Configuration implements ConfigurationInterface
 {
+    const ALLOWED_SIZE_UNITS = [
+        'k' => 1000,
+        'ki' => 1 << 10,
+        'm' => 1000 * 1000,
+        'mi' => 1 << 20,
+        'g' => 1000 * 1000 * 1000,
+        'gi' => 1 << 30,
+    ];
+
     /**
      * {@inheritdoc}
      */
@@ -68,6 +77,25 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('file_class')->cannotBeEmpty()->end()
                         ->scalarNode('handler')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('storage')->cannotBeEmpty()->end()
+                        ->scalarNode('max_size')
+                            ->defaultNull()
+                            ->validate()
+                                ->ifTrue(function ($v) {
+                                    if ($v === null) {
+                                        return false;
+                                    }
+                                    if (ctype_digit((string) $v)) {
+                                        return false;
+                                    }
+                                    if (preg_match('/^(\d++)('.implode('|', array_keys(self::ALLOWED_SIZE_UNITS)).')$/i', $v, $matches)) {
+                                        return false;
+                                    }
+
+                                    return true;
+                                })
+                                ->thenInvalid('Allowed units are "K", "KI", "M", "MI", "G", "GI"')
+                            ->end()
+                        ->end()
                         ->arrayNode('route')
                             ->children()
                                 ->scalarNode('name')->cannotBeEmpty()->end()

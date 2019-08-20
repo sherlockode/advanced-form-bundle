@@ -18,3 +18,9 @@ services:
             - '@doctrine.orm.entity_manager'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
         tags: ['form.type']
+    sherlockode_afb.file.upload_type:
+        class: Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType
+        arguments:
+            - '@sherlockode_afb.mapping_manager'
+            - '@translator'
+        tags: ['form.type']

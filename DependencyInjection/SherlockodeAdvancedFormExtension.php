@@ -23,7 +23,8 @@ class SherlockodeAdvancedFormExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('sherlockode_afb.uploader_mappings', $config['uploader_mappings']);
+        $mappings = $this->processMappings($config['uploader_mappings']);
+        $container->setParameter('sherlockode_afb.uploader_mappings', $mappings);
         $container->setParameter('sherlockode_afb.tmp_uploaded_file_class', $config['tmp_uploaded_file_class']);
         $container->setParameter('sherlockode_afb.tmp_uploaded_file_dir', $config['tmp_uploaded_file_dir']);
 
@@ -94,5 +95,28 @@ class SherlockodeAdvancedFormExtension extends Extension
             '@SherlockodeAdvancedForm/Form/upload_file.html.twig',
         ]);
         $container->setParameter('twig.form.resources', $resources);
+    }
+
+    /**
+     * @param array $mappings
+     *
+     * @return array
+     */
+    private function processMappings($mappings)
+    {
+        foreach ($mappings as $key => $mapping) {
+            $maxSize = $mapping['max_size'] ?? null;
+
+            $intMaxSize = null;
+            if (ctype_digit((string) $maxSize)) {
+                $intMaxSize = (int) $maxSize;
+            } elseif (preg_match('/^(\d++)('.implode('|', array_keys(Configuration::ALLOWED_SIZE_UNITS)).')$/i', $maxSize, $matches)) {
+                $intMaxSize = $matches[1] * Configuration::ALLOWED_SIZE_UNITS[$unit = strtolower($matches[2])];
+            }
+
+            $mappings[$key]['int_max_size'] = $intMaxSize;
+        }
+
+        return $mappings;
     }
 }

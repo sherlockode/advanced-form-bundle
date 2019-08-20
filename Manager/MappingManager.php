@@ -48,6 +48,8 @@ class MappingManager
             $mapping->fileProperty = $data['file_property'];
             $mapping->fileCollectionProperty = $data['file_collection_property'];
             $mapping->handler = $data['handler'];
+            $mapping->maxSize = $data['max_size'] ?? null;
+            $mapping->intMaxSize = $data['int_max_size'] ?? null;
             $mapping->route = $data['route'] ?? null;
 
             $this->mappings[$type] = $mapping;

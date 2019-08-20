@@ -19,3 +19,4 @@ Options overview
 * `remove_tmp_uri_path`: The url for removing temporary files from temporary mode. Default value is the route `sherlockode_afb_remove_tmp`.
 * `upload_uri_path`: The url for the AJAX file upload.
   Default value is the route `sherlockode_afb_upload` (or `sherlockode_afb_upload_tmp` for temporary mode).
+* `max_size`: Maximum size allowed for the file. Allowed units are "K", "KI", "M", "MI", "G", "GI".
