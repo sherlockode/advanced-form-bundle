@@ -63,32 +63,37 @@ class FileUploadController extends AbstractController
     {
         $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $uploadedFile = $form->get('file')->getData();
-            try {
-                $object = $this->uploadManager->upload(
-                    $uploadedFile,
-                    $form->get('mapping')->getData(),
-                    $form->get('id')->getData()
-                );
-            } catch (\Exception $e) {
-                throw $e;
-            }
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $uploadedFile = $form->get('file')->getData();
+                try {
+                    $object = $this->uploadManager->upload(
+                        $uploadedFile,
+                        $form->get('mapping')->getData(),
+                        $form->get('id')->getData()
+                    );
 
-            $data = ['id' => $object->getId()];
-            $routeInfo = $this->mappingManager->getMapping($form->get('mapping')->getData())->route;
-            if (null !== $routeInfo) {
-                $params = [];
-                foreach ($routeInfo['parameters'] as $key => $parameter) {
-                    $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
+                    $data = ['id' => $object->getId()];
+                    $routeInfo = $this->mappingManager->getMapping($form->get('mapping')->getData())->route;
+                    if (null !== $routeInfo) {
+                        $params = [];
+                        foreach ($routeInfo['parameters'] as $key => $parameter) {
+                            $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
+                        }
+
+                        $data['path'] = $this->generateUrl($routeInfo['name'], $params);
+                    }
+
+                    return new JsonResponse($data);
+                } catch (\Exception $e) {
+                    return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
                 }
-
-                $data['path'] = $this->generateUrl($routeInfo['name'], $params);
             }
-            return new JsonResponse($data);
+
+            return new JsonResponse(['error' => $form->getErrors(true)->__toString()], Response::HTTP_BAD_REQUEST);
         }
 
-        throw new \Exception('Invalid form');
+        return new JsonResponse([], Response::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -100,14 +105,22 @@ class FileUploadController extends AbstractController
     {
         $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $uploadedFile = $form->get('file')->getData();
-            $file = $this->uploadManager->uploadTemporary($uploadedFile);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                try {
+                    $uploadedFile = $form->get('file')->getData();
+                    $file = $this->uploadManager->uploadTemporary($uploadedFile);
 
-            return new JsonResponse([
-                'key' => $file->getKey(),
-                'token' => $file->getToken(),
-            ]);
+                    return new JsonResponse([
+                        'key'   => $file->getKey(),
+                        'token' => $file->getToken(),
+                    ]);
+                } catch (\Exception $e) {
+                    return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+                }
+            }
+
+            return new JsonResponse(['error' => $form->getErrors(true)->__toString()], Response::HTTP_BAD_REQUEST);
         }
 
         return new JsonResponse([], Response::HTTP_BAD_REQUEST);

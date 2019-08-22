@@ -60,7 +60,13 @@
 .afb_file_container .afb_file_progress > div {
     width: 0;
     height: 100%;
+    background: #ffb822;
+}
+.afb_file_container .afb_file_progress.afb_file_upload_success > div {
     background: #26b89a;
+}
+.afb_file_container .afb_file_progress.afb_file_upload_error > div {
+    background: #b83041;
 }
 .afb_file_container .afb_upload_preview .afb_remove_file.upload-details {
     display: block;

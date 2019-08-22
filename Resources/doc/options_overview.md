@@ -12,6 +12,7 @@ Options overview
 ## Optional options
 
 * `js_callback`: A string representing a JavaScript function name for a callback after an upload. `null` by default.
+* `js_error_callback`: A string representing a JavaScript function name for a callback after an error on upload. `null` by default.
 * `image_preview`: A boolean which determine the default callback after an upload. Set it to true if you want a preview for your pictures. `false` by default.
 * `remove_uri_path`: The url for removing files. It can be useful if you want to override the default controller.
   Default value is the route `sherlockode_afb_remove`.

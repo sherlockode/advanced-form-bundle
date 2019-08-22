@@ -29,6 +29,9 @@
     {% if jsCallback %}
         data-callback="{{ jsCallback|e }}"
     {% endif %}
+    {% if jsErrorCallback %}
+        data-errorcallback="{{ jsErrorCallback|e }}"
+    {% endif %}
     {% if imagePreview %}
         data-imgpreview="true"
     {% endif %}
