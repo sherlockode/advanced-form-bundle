@@ -27,7 +27,7 @@ $builder
         'mapping' => function (User $user) {
             $books = [];
             foreach ($user->getBooks() as $book) {
-                $books[] => ['id' => $book->getId(), 'label' => $book->getTitle()];
+                $books[] = ['id' => $book->getId(), 'label' => $book->getTitle()];
             }
             
             return [$user->getId(), $books];
