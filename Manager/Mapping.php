@@ -12,5 +12,7 @@ class Mapping
     public $fileCollectionProperty;
     public $handler;
     public $storage;
+    public $maxSize;
+    public $intMaxSize;
     public $route;
 }
