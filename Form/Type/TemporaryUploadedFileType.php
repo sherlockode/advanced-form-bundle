@@ -4,9 +4,10 @@ namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Sherlockode\AdvancedFormBundle\Form\DataTransformer\TemporaryUploadFileTransformer;
+use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -35,14 +36,16 @@ class TemporaryUploadedFileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('key', TextType::class)
-            ->add('token', TextType::class)
+            ->add('key', HiddenType::class)
+            ->add('token', HiddenType::class)
         ;
 
-        $builder->addViewTransformer(new TemporaryUploadFileTransformer($options['temporary_path']));
+        $builder->addViewTransformer(new TemporaryUploadFileTransformer($options['temporary_path'], $this->om->getRepository($this->tmpFileClass)));
         $builder->addViewTransformer(new CallbackTransformer(function ($data) {
-            // norm to view is not needed
-            return null;
+            if (!$data instanceof TemporaryUploadedFileInterface) {
+                return [];
+            }
+            return ['key' => $data->getKey(), 'token' => $data->getToken()];
         }, function ($data) {
             if (!is_array($data)) {
                 return null;
