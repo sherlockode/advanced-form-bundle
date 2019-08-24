@@ -5,11 +5,13 @@ namespace Sherlockode\AdvancedFormBundle\Twig\Extension;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Class UploaderExtension
  */
-class UploaderExtension extends \Twig_Extension
+class UploaderExtension extends AbstractExtension
 {
     /**
      * @var UrlGeneratorInterface
@@ -36,8 +38,8 @@ class UploaderExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('sherlockode_afb_asset', [$this, 'getAsset']),
-            new \Twig_SimpleFunction('sherlockode_afb_filename', [$this, 'getFilename']),
+            new TwigFunction('sherlockode_afb_asset', [$this, 'getAsset']),
+            new TwigFunction('sherlockode_afb_filename', [$this, 'getFilename']),
         ];
     }
 
