@@ -2,14 +2,17 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\DataTransformer;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class TemporaryUploadFileTransformer
  *
- * Transforms a TemporaryUploadedFileInterface into a simulated UploadedFile instance
+ * ReverseTransforms a TemporaryUploadedFileInterface into a simulated UploadedFile instance
+ * Usage : On POST action, the reverseTransform will simulate an upload from a file already uploaded on the server
  */
 class TemporaryUploadFileTransformer implements DataTransformerInterface
 {
@@ -19,11 +22,18 @@ class TemporaryUploadFileTransformer implements DataTransformerInterface
     private $path;
 
     /**
-     * @param string $path
+     * @var ObjectRepository
      */
-    public function __construct($path)
+    private $repository;
+
+    /**
+     * @param string           $path
+     * @param ObjectRepository $repository
+     */
+    public function __construct($path, $repository)
     {
         $this->path = $path;
+        $this->repository = $repository;
     }
 
     /**
@@ -31,10 +41,13 @@ class TemporaryUploadFileTransformer implements DataTransformerInterface
      */
     public function transform($object)
     {
-        if ($object === null) {
-            return [];
+        if (!$object instanceof File) {
+            return null;
         }
-        return [];
+
+        $key = $object->getFilename();
+
+        return $this->repository->findOneBy(['key' => $key]);
     }
 
     /**
@@ -46,6 +59,7 @@ class TemporaryUploadFileTransformer implements DataTransformerInterface
             return null;
         }
 
+        // generate an uploaded file from the TemporaryUploadedFileInterface (file was uploaded in previous request)
         return new UploadedFile(
             $this->path . '/' . $data->getKey(),
             $data->getFilename(),

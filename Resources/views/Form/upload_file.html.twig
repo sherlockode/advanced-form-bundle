@@ -53,6 +53,17 @@
             {{ block('file_info') }}
             {% endwith %}
         {% endfor %}
+
+        {# render the tmp uploaded file form inputs (key and token) which have not been saved yet
+        this will be empty in regular cases, only present on invalid forms (key/token data was just posted) #}
+        {% for child in form.files|default([]) %}
+            {% if child.vars.data is not empty %}
+            {% set i = i + 1 %}
+            <li class="{% if imagePreview %}afb_preview_item{% endif %} afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
+                {{ form_widget(child) }}
+            </li>
+            {% endif %}
+        {% endfor %}
     </ul>
 {% endblock %}
 
