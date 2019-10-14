@@ -20,3 +20,39 @@ Options overview
 * `upload_uri_path`: The url for the AJAX file upload.
   Default value is the route `sherlockode_afb_upload` (or `sherlockode_afb_upload_tmp` for temporary mode).
 * `max_size`: Maximum size allowed for the file. Allowed units are "K", "KI", "M", "MI", "G", "GI".
+
+In the `js_callback` function, you will receive three arguments:
+- jqXhr: the upload ajax response
+- previewElement: the dom element of the last uploaded file
+- callback: our original behavior after the upload. It is up to you to decide whether to call it or not
+
+Here is an example of a `js_callback` function: 
+
+```html
+<script type="text/javascript">
+    var customJsCallback;
+
+    (function(){
+        customJsCallback = function(jqXhr, previewElement, callback){
+            // Immediate upload mode
+            let uploadedObjectId = jqXhr.id;
+            let uploadedOriginalFilename = jqXhr.filename;
+            let uploadedFileUrl = jqXhr.path;
+            
+            // Temporary upload mode
+            let uploadedFileKey = jqXhr.key;
+            let uploadedFileToken = jqXhr.token;
+            
+            // if you added a link to your file in your form template 
+            if (jqXhr.path) {
+                previewElement.find('.file-link').attr('href', jqXhr.path);
+            }
+            // if you want to remove the progress bar after the upload
+            previewElement.find('.afb_file_progress').remove();
+            
+            // if you want our default behavior
+            callback();
+        };
+    }());
+</script>
+```

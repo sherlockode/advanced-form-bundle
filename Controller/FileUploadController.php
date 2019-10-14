@@ -73,12 +73,15 @@ class FileUploadController extends AbstractController
                         $form->get('id')->getData()
                     );
 
-                    $data = ['id' => $object->getId()];
+                    $data = [
+                        'id' => $object->getId(),
+                        'filename' => $uploadedFile->getClientOriginalName(),
+                    ];
                     $routeInfo = $this->mappingManager->getMapping($form->get('mapping')->getData())->route;
                     if (null !== $routeInfo) {
                         $params = [];
                         foreach ($routeInfo['parameters'] as $key => $parameter) {
-                            $params[$key] = $parameter === '{id}' ? $form->get('id')->getData() : $parameter;
+                            $params[$key] = $parameter === '{id}' ? $object->getId() : $parameter;
                         }
 
                         $data['path'] = $this->generateUrl($routeInfo['name'], $params);

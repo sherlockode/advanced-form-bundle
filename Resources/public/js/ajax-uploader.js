@@ -90,19 +90,23 @@
                     processData: false,
                     data: formData
                 }).done(function(response) {
-                    if (uploadCallback && "function" === typeof(window[uploadCallback])) {
-                        window[uploadCallback].call(null, response);
-                    }
                     var previewElement = $('.afb_preview_' + uploadId);
-                    previewElement.find('.afb_file_progress').addClass('afb_file_upload_success');
-                    if (response.path && isImgPreview && file.type.match('image.*')) {
-                        previewElement.find('img').attr('src', response.path);
-                    }
                     if (response.id) {
                         previewElement.find('.afb_remove_file').data('id', response.id);
                     }
                     if (uploadMode === 'temporary') {
                         addHiddenFields(previewElement, response);
+                    }
+                    var processUploadedFileFunction = function() {
+                        previewElement.find('.afb_file_progress').addClass('afb_file_upload_success');
+                        if (response.path && isImgPreview && file.type.match('image.*')) {
+                            previewElement.find('img').attr('src', response.path);
+                        }
+                    };
+                    if (uploadCallback && "function" === typeof(window[uploadCallback])) {
+                        window[uploadCallback].call(null, response, previewElement, processUploadedFileFunction);
+                    } else {
+                        processUploadedFileFunction();
                     }
                     if ("function" === typeof(callback)) {
                         callback();
