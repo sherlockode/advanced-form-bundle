@@ -5,7 +5,11 @@
         data-prototype="{{ block('file_info')|e }}"
         {% endwith %}
     >
-        {{ block('dropzone') }}
+        {% set disabled = true %}
+        {% if not form.vars.disabled %}
+            {{ block('dropzone') }}
+            {% set disabled = false %}
+        {% endif %}
         {{ block('file_list') }}
     </div>
 {% endblock %}
@@ -84,6 +88,8 @@
         {% if progressBar %}
             <div class="afb_file_progress upload-details"><div></div></div>
         {% endif %}
-        <a class="afb_remove_file upload-details" href="#" data-upload="{{ uploadId }}" data-id="{{ dataId }}">X</a>
+        {% if disabled is defined and not disabled %}
+            <a class="afb_remove_file upload-details" href="#" data-upload="{{ uploadId }}" data-id="{{ dataId }}">X</a>
+        {% endif %}
     </li>
 {% endblock %}
