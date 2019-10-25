@@ -167,13 +167,13 @@
 
             function deletePreview(element, removeFromServer){
                 if (removeFromServer) {
-                    if (isMultiple) {
+                    if (element.closest('.afb_item').data('tmp')) {
+                        removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
+                    } else if (isMultiple) {
                         var pictureId = element.data('id');
                         if (pictureId) {
                             removeFile(pictureId);
                         }
-                    } else if (element.closest('.afb_item').data('tmp')) {
-                        removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
                     } else {
                         removeFile(subjectId, false);
                     }
