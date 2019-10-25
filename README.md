@@ -5,7 +5,7 @@ Powerful Symfony form components
 
 ## Prerequisites
 
-This bundle requires Symfony 3 and jQuery.
+This bundle requires Symfony 3.4+ and jQuery.
 
 ## Installation
 
@@ -23,20 +23,17 @@ Enable the bundle in the kernel
 
 ```php
 <?php
-// app/AppKernel.php
+// config/bundles.php
 
-public function registerBundles()
-{
-    $bundles = [
-        // ...
-        new Sherlockode\AdvancedFormBundle\SherlockodeAdvancedFormBundle(),
-    ];
-}
+return [
+    // ...
+    Sherlockode\AdvancedFormBundle\SherlockodeAdvancedFormBundle::class => ['all' => true],
+];
 ```
 
 ### Step 3: Configure the bundle
 
-Import the routing in app/config/routing.yml
+Import the routing in `config/routes.yml`
 
 ```yaml
 sherlockode_advanced_form:
@@ -45,8 +42,10 @@ sherlockode_advanced_form:
 
 ### Step 4: Publish assets
 
+You may use Webpack to import the JavaScript files or use the `assets` command.
+
 ```bash
-$ php bin/console assets:install --symlink web
+$ php bin/console assets:install --symlink public
 ```
 
 ## Next steps
