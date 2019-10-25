@@ -1,3 +1,11 @@
+let jQuery;
+
+if (typeof module === "object" && module.exports) {
+    jQuery = require("jquery");
+} else {
+    jQuery = window.jQuery;
+}
+
 jQuery(function ($) {
     'use strict';
 
