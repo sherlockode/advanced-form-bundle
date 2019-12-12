@@ -72,6 +72,22 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
                         ->booleanNode('multiple')->defaultFalse()->end()
+                        ->arrayNode('constraints')
+                            ->beforeNormalization()->castToArray()->end()
+                            ->validate()
+                                ->ifTrue(function ($constraints) {
+                                    foreach ($constraints as $constraint) {
+                                        if (!class_exists($constraint)) {
+                                            return true;
+                                        }
+                                    }
+
+                                    return false;
+                                })
+                                ->thenInvalid('Constraints class does not exists.')
+                            ->end()
+                            ->prototype('scalar')->end()
+                        ->end()
                         ->scalarNode('file_property')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('file_collection_property')->defaultNull()->cannotBeEmpty()->end()
                         ->scalarNode('file_class')->cannotBeEmpty()->end()

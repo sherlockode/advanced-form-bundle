@@ -44,6 +44,7 @@ class MappingManager
             $mapping->id = $type;
             $mapping->class = $data['class'];
             $mapping->multiple = $data['multiple'];
+            $mapping->constraints = $data['constraints'];
             $mapping->fileClass = $data['multiple'] ? $data['file_class'] : $data['class'];
             $mapping->fileProperty = $data['file_property'];
             $mapping->fileCollectionProperty = $data['file_collection_property'];

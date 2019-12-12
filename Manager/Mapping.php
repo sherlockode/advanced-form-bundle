@@ -6,6 +6,7 @@ class Mapping
 {
     public $id;
     public $class;
+    public $constraints;
     public $multiple;
     public $fileClass;
     public $fileProperty;

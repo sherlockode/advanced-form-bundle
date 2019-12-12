@@ -49,6 +49,24 @@ class UploadFileType extends AbstractType
             ])
         ;
 
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+
+            if (isset($data['mapping'])) {
+                $mapping = $this->mappingManager->getMapping($data['mapping']);
+
+                if ($mapping && $mapping->constraints) {
+                    $form = $event->getForm();
+                    $form->remove('file', FileType::class);
+                    $form->add('file', FileType::class, [
+                        'constraints' => array_map(function ($class) {
+                            return new $class;
+                        }, $mapping->constraints)
+                    ]);
+                }
+            }
+        });
+
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event){
             $form = $event->getForm();
             $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
