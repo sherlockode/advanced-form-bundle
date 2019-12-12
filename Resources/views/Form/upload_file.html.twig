@@ -18,7 +18,7 @@
     data-uploadurl="{{ uploadUriPath|e }}"
     data-removeurl="{{ removeUriPath|e }}"
     data-removetmpurl="{{ removeTmpUriPath|e }}"
-    data-name="{{ name|e }}"
+    data-name="{{ full_name|e }}"
     data-mapping="{{ mapping|e }}"
     data-upload-mode="{{ uploadMode }}"
     {% if multiple %}
@@ -27,7 +27,7 @@
     {% if async %}
         data-async="true"
     {% endif %}
-    {% if subject.id %}
+    {% if subject is not null and subject.id is not null %}
         data-id="{{ subject.id|e }}"
     {% endif %}
     {% if jsCallback %}

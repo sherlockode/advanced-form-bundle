@@ -22,7 +22,6 @@ if (typeof module === "object" && module.exports) {
                 mapping = container.data('mapping'),
                 formName = container.data('name'),
                 subjectId = container.data('id'),
-                formPrefix = container.closest('form').attr('name'),
                 uploadCounter = container.find('.afb_item').length > 0 ? container.find('.afb_item').length + 1 : 0,
                 prototype = container.data('prototype'),
                 isAsync = container.data('async');
@@ -162,11 +161,11 @@ if (typeof module === "object" && module.exports) {
                 var index = itemContainer.data('upload');
                 var fields = [];
                 if (isMultiple) {
-                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][key]', value: data.key});
-                    fields.push({name: formPrefix + '[' + formName + '][files][' + index + '][token]', value: data.token});
+                    fields.push({name: formName + '[files][' + index + '][key]', value: data.key});
+                    fields.push({name: formName + '[files][' + index + '][token]', value: data.token});
                 } else {
-                    fields.push({name: formPrefix + '[' + formName + '][files][key]', value: data.key});
-                    fields.push({name: formPrefix + '[' + formName + '][files][token]', value: data.token});
+                    fields.push({name: formName + '[files][key]', value: data.key});
+                    fields.push({name: formName + '[files][token]', value: data.token});
                 }
                 for (var i = 0; i < fields.length; i++) {
                     itemContainer.append($('<input class="afb_upload_' + index + '" type="hidden" name="' + fields[i].name + '" value="' + fields[i].value + '">'));
