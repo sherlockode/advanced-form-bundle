@@ -78,3 +78,13 @@ public function userBooksAction(Request $request)
     return new JsonReponse($options);
 }
 ```
+
+### Dynamic dropdown creation
+
+If the dropdown that you want to be dependent from another is created dynamically with JavaScript (for instance, in a form collection or inside a popup),
+you need to trigger a special event `dependent_entity_created` when it is added to the DOM in order for it to link to its parent.
+
+```javascript
+let popup = $('.my-popup-ajax');
+popup.find('select.dependent-entity').trigger('dependent_entity_created');
+```
