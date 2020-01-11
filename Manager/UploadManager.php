@@ -2,7 +2,7 @@
 
 namespace Sherlockode\AdvancedFormBundle\Manager;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Sherlockode\AdvancedFormBundle\Event\RemoveUploadEvent;
 use Sherlockode\AdvancedFormBundle\Event\UploadEvent;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
@@ -15,9 +15,9 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class UploadManager
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
     /**
      * @var MappingManager
@@ -44,20 +44,20 @@ class UploadManager
     /**
      * UploadManager constructor.
      *
-     * @param ObjectManager            $om
+     * @param EntityManagerInterface   $em
      * @param MappingManager           $mappingManager
      * @param EventDispatcherInterface $eventDispatcher
      * @param StorageInterface         $tmpStorage
      * @param string|null              $tmpUploadedFileClass
      */
     public function __construct(
-        ObjectManager $om,
+        EntityManagerInterface $em,
         MappingManager $mappingManager,
         EventDispatcherInterface $eventDispatcher,
         StorageInterface $tmpStorage,
         $tmpUploadedFileClass = null
     ) {
-        $this->om = $om;
+        $this->em = $em;
         $this->mappingManager = $mappingManager;
         $this->eventDispatcher = $eventDispatcher;
         $this->tmpStorage = $tmpStorage;
@@ -87,7 +87,7 @@ class UploadManager
         if ($id === null) {
             $subject = new $entityClass();
         } else {
-            $subject = $this->om->getRepository($entityClass)->find($id);
+            $subject = $this->em->getRepository($entityClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
@@ -108,8 +108,8 @@ class UploadManager
         $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
         $this->eventDispatcher->dispatch('afb.post_upload', new UploadEvent($subject, $mapping, $uploadedFile));
 
-        $this->om->persist($subject);
-        $this->om->flush();
+        $this->em->persist($subject);
+        $this->em->flush();
 
         return $subject;
     }
@@ -135,8 +135,8 @@ class UploadManager
         $obj->setToken(rand());
         $obj->setFilename($uploadedFile->getClientOriginalName());
 
-        $this->om->persist($obj);
-        $this->om->flush($obj);
+        $this->em->persist($obj);
+        $this->em->flush($obj);
 
         return $obj;
     }
@@ -147,8 +147,8 @@ class UploadManager
     public function removeTemporary(TemporaryUploadedFileInterface $fileInfo)
     {
         $this->tmpStorage->remove($fileInfo->getKey());
-        $this->om->remove($fileInfo);
-        $this->om->flush($fileInfo);
+        $this->em->remove($fileInfo);
+        $this->em->flush($fileInfo);
     }
 
     /**
@@ -162,7 +162,7 @@ class UploadManager
     {
         if (null !== $type && null !== $id) {
             $mapping = $this->mappingManager->getMapping($type);
-            $subject = $this->om->getRepository($mapping->fileClass)->find($id);
+            $subject = $this->em->getRepository($mapping->fileClass)->find($id);
             if (null === $subject) {
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
@@ -171,9 +171,9 @@ class UploadManager
             $handler->remove($subject, $field);
             $this->eventDispatcher->dispatch('afb.post_remove_upload', new RemoveUploadEvent($subject, $mapping));
             if ($deleteObject || $mapping->multiple) {
-                $this->om->remove($subject);
+                $this->em->remove($subject);
             }
-            $this->om->flush();
+            $this->em->flush();
         }
     }
 

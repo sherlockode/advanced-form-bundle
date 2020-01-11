@@ -217,7 +217,7 @@ namespace AppBundle\Controller;
 
 use App\Entity\People;
 use AppBundle\Form\PeopleType;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -227,7 +227,7 @@ class PeopleController extends Controller
     /**
      * @Route("/people/{people}", name="people_form")
      */
-    public function indexAction(Request $request, ObjectManager $om, People $people = null)
+    public function indexAction(Request $request, EntityManagerInterface $em, People $people = null)
     {
         if (!$people instanceof People) {
             $people = new People();
@@ -236,8 +236,8 @@ class PeopleController extends Controller
         $form = $this->createForm(SimpleImageType::class, $people);     
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $om->persist($people);
-            $om->flush();
+            $em->persist($people);
+            $em->flush();
             
             return $this->redirectToRoute('people_form', ['people' => $people->getId()]);
         }
