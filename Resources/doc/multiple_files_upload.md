@@ -240,13 +240,13 @@ namespace AppBundle\Controller;
 
 use App\Entity\Product;
 use AppBundle\Form\ProductType;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 class ProductController extends Controller
 {
-    public function indexAction(Request $request, ObjectManager $om, Product $product = null)
+    public function indexAction(Request $request, EntityManagerInterface $em, Product $product = null)
     {
         if (!$product instanceof Product) {
             $product = new Product();
@@ -255,8 +255,8 @@ class ProductController extends Controller
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $om->persist($product);
-            $om->flush();
+            $em->persist($product);
+            $em->flush();
             
             return $this->redirectToRoute('product_form', ['product' => $product->getId()]);
         }

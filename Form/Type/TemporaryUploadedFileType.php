@@ -2,7 +2,7 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Sherlockode\AdvancedFormBundle\Form\DataTransformer\TemporaryUploadFileTransformer;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Symfony\Component\Form\AbstractType;
@@ -19,13 +19,19 @@ class TemporaryUploadedFileType extends AbstractType
     private $tmpFileClass;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
-    public function __construct(ObjectManager $om, $tmpFileClass)
+    /**
+     * TemporaryUploadedFileType constructor.
+     *
+     * @param EntityManagerInterface $em
+     * @param string                 $tmpFileClass
+     */
+    public function __construct(EntityManagerInterface $em, $tmpFileClass)
     {
-        $this->om = $om;
+        $this->em = $em;
         $this->tmpFileClass = $tmpFileClass;
     }
 
@@ -40,17 +46,22 @@ class TemporaryUploadedFileType extends AbstractType
             ->add('token', HiddenType::class)
         ;
 
-        $builder->addViewTransformer(new TemporaryUploadFileTransformer($options['temporary_path'], $this->om->getRepository($this->tmpFileClass)));
+        $builder->addViewTransformer(new TemporaryUploadFileTransformer(
+            $options['temporary_path'],
+            $this->em->getRepository($this->tmpFileClass)
+        ));
         $builder->addViewTransformer(new CallbackTransformer(function ($data) {
             if (!$data instanceof TemporaryUploadedFileInterface) {
                 return [];
             }
+
             return ['key' => $data->getKey(), 'token' => $data->getToken()];
         }, function ($data) {
             if (!is_array($data)) {
                 return null;
             }
-            $tmpFile = $this->om->getRepository($this->tmpFileClass)->findOneBy($data);
+            $tmpFile = $this->em->getRepository($this->tmpFileClass)->findOneBy($data);
+
             return $tmpFile;
         }));
     }
