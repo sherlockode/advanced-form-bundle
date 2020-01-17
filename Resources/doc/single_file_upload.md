@@ -204,7 +204,7 @@ class PeopleType extends AbstractType
     }
 }
 ```
-Notice the "upload_mode" option which let's you choose how the entity will be updated. In the example, we set the value
+Notice the `upload_mode` option which let you choose how the entity will be updated. In the example, we set the value
 to "immediate", meaning that the entity will be updated with the new picture as soon as the AJAX request is done
 (when drap & drop is over).
 
@@ -284,6 +284,11 @@ And to finish, let's create the view including the CSS and JavaScript files
     {{ parent() }}
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="{{ asset('bundles/sherlockodeadvancedform/js/ajax-uploader.js') }}"></script>
+
+    <script type="text/javascript">
+    // initialize the uploader
+    jQuery('.afb_file_container').AfbAjaxUploader();
+    </script>
 {% endblock %}
 ```
 It's done ! Go to [/people](#) and enjoy it !
