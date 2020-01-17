@@ -7,12 +7,28 @@ if (typeof module === "object" && module.exports) {
 }
 
 (function($) {
-    $.fn.AfbAjaxUploader = function(){
+    $.fn.AfbAjaxUploader = function(options) {
+        let settings = $.extend({
+            onXhrFail: baseOnXhrFail,
+            uploadCallback: null,
+        }, options);
+
+        function baseOnXhrFail(jqXhr){
+            let text = 'An error occurred';
+            if (jqXhr.status >= 400 && jqXhr.status < 500) {
+                if (jqXhr.responseJSON && jqXhr.responseJSON.error) {
+                    text = jqXhr.responseJSON.error;
+                } else {
+                    text = jqXhr.responseText;
+                }
+            }
+            alert(text);
+        }
 
         return this.each(function(){
             var container = $(this),
-                uploadCallback = container.data('callback'),
-                uploadErrorCallback = container.data('errorcallback'),
+                uploadCallback = container.data('callback') ? container.data('callback') : settings.uploadCallback,
+                ajaxErrorCallback = container.data('errorcallback'),
                 isImgPreview = container.data('imgpreview'),
                 uploadMode = container.data('uploadMode'),
                 isMultiple = container.data('multiple'),
@@ -26,17 +42,7 @@ if (typeof module === "object" && module.exports) {
                 prototype = container.data('prototype'),
                 isAsync = container.data('async');
 
-            function onXhrFail(jqXhr){
-                var text = 'An error happened';
-                if (jqXhr.status >= 400 && jqXhr.status < 500) {
-                    if (jqXhr.responseJSON && jqXhr.responseJSON.error) {
-                        text = jqXhr.responseJSON.error;
-                    } else {
-                        text = jqXhr.responseText;
-                    }
-                }
-                alert(text);
-            }
+            let onXhrFail = ajaxErrorCallback && "function" === typeof(window[ajaxErrorCallback]) ? window[ajaxErrorCallback] : settings.onXhrFail;
 
             function onDropFile(event) {
                 var files = event.dataTransfer.files;
@@ -119,11 +125,7 @@ if (typeof module === "object" && module.exports) {
                         callback();
                     }
                 }).fail(function(response) {
-                    if (uploadErrorCallback && "function" === typeof(window[uploadErrorCallback])) {
-                        window[uploadErrorCallback].call(null, response);
-                    } else {
-                        onXhrFail(response);
-                    }
+                    onXhrFail(response);
                     var previewElement = $('.afb_preview_' + uploadId);
                     previewElement.find('.afb_file_progress').addClass('afb_file_upload_error');
                     deletePreview(previewElement.find('.afb_remove_file'), false);
@@ -234,7 +236,3 @@ if (typeof module === "object" && module.exports) {
         });
     };
 }(jQuery));
-
-jQuery(function ($) {
-    $('.afb_file_container').AfbAjaxUploader();
-});
