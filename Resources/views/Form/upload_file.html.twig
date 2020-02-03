@@ -33,6 +33,9 @@
     {% if jsCallback %}
         data-callback="{{ jsCallback|e }}"
     {% endif %}
+    {% if jsPreRemoveCallback %}
+        data-pre-remove-callback="{{ jsPreRemoveCallback|e }}"
+    {% endif %}
     {% if jsErrorCallback %}
         data-errorcallback="{{ jsErrorCallback|e }}"
     {% endif %}
