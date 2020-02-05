@@ -75,6 +75,7 @@ class FileType extends AbstractType
             'remove_uri_path' => $this->urlGenerator->generate('sherlockode_afb_remove'),
             'remove_tmp_uri_path' => $url = $this->urlGenerator->generate('sherlockode_afb_remove_tmp'),
             'js_callback' => null,
+            'js_pre_remove_callback' => null,
             'js_error_callback' => null,
             'mapped' => function (Options $options) {
                 return $options['upload_mode'] != 'immediate';
@@ -103,6 +104,7 @@ class FileType extends AbstractType
         $view->vars['multiple'] = $isMultiple;
         $view->vars['async'] = $options['async'];
         $view->vars['jsCallback'] = $options['js_callback'];
+        $view->vars['jsPreRemoveCallback'] = $options['js_pre_remove_callback'];
         $view->vars['jsErrorCallback'] = $options['js_error_callback'];
         $view->vars['subject'] = $subject;
         $view->vars['mapping'] = $options['mapping'];

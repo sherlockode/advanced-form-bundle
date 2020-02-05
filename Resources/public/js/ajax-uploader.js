@@ -11,6 +11,7 @@ if (typeof module === "object" && module.exports) {
         let settings = $.extend({
             onXhrFail: baseOnXhrFail,
             uploadCallback: null,
+            onPreRemove: null,
         }, options);
 
         function baseOnXhrFail(jqXhr){
@@ -28,6 +29,7 @@ if (typeof module === "object" && module.exports) {
         return this.each(function(){
             var container = $(this),
                 uploadCallback = container.data('callback') ? container.data('callback') : settings.uploadCallback,
+                preRemoveCallback = container.data('preRemoveCallback'),
                 ajaxErrorCallback = container.data('errorcallback'),
                 isImgPreview = container.data('imgpreview'),
                 uploadMode = container.data('uploadMode'),
@@ -43,6 +45,7 @@ if (typeof module === "object" && module.exports) {
                 isAsync = container.data('async');
 
             let onXhrFail = ajaxErrorCallback && "function" === typeof(window[ajaxErrorCallback]) ? window[ajaxErrorCallback] : settings.onXhrFail;
+            let onPreRemove = preRemoveCallback && "function" === typeof(window[preRemoveCallback]) ? window[preRemoveCallback] : settings.onPreRemove;
 
             function onDropFile(event) {
                 var files = event.dataTransfer.files;
@@ -193,6 +196,16 @@ if (typeof module === "object" && module.exports) {
                 }
             }
 
+            function triggerRemove(element, next) {
+                if (onPreRemove && "function" === typeof(onPreRemove)) {
+                    onPreRemove.call(null, element, function() {
+                        return next();
+                    });
+                } else {
+                    return next();
+                }
+            }
+
             function removeFile(id, isTmp){
                 var formData = new FormData();
                 var url = removeUrl;
@@ -231,7 +244,10 @@ if (typeof module === "object" && module.exports) {
             });
             container.find('.afb_upload_container').on('click', '.afb_remove_file', function(event) {
                 event.preventDefault();
-                deletePreview($(this), true);
+                let element = $(this);
+                triggerRemove(element, function() {
+                    return deletePreview(element, true);
+                });
             });
         });
     };
