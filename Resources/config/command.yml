@@ -1,0 +1,6 @@
+services:
+    sherlockode_afb.command.remove_tmp_files:
+        class: Sherlockode\AdvancedFormBundle\Command\RemoveTemporaryFileCommand
+        arguments:
+            - '@sherlockode_afb.storage.tmp_storage'
+        tags: ['console.command']

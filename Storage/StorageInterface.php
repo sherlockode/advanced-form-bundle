@@ -2,8 +2,15 @@
 
 namespace Sherlockode\AdvancedFormBundle\Storage;
 
+use Symfony\Component\HttpFoundation\File\File;
+
 interface StorageInterface
 {
+    /**
+     * @return array
+     */
+    public function all();
+
     /**
      * @param string $key
      *
@@ -25,4 +32,11 @@ interface StorageInterface
      * @return bool
      */
     public function remove($key);
+
+    /**
+     * @param string $key
+     *
+     * @return File
+     */
+    public function getFileObject($key);
 }
