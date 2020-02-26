@@ -74,6 +74,7 @@ class SherlockodeAdvancedFormExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $toBeLoaded = [
+            'command.yml',
             'controller.yml',
             'form.yml',
             'manager.yml',

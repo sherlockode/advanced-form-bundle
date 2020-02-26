@@ -66,3 +66,19 @@ $builder
     ])
 ;
 ```
+
+Remove files from temporary storage
+-------------
+
+Sometimes user uploads a file and never submit the entity form. To remove all non-used temporary files, you can run
+this command:
+
+```bash
+$ php bin/console afb:cleanup:tmpfiles
+```
+
+Use the `older-than` option to only remove older files:
+
+```bash
+$ php bin/console afb:cleanup:tmpfiles --older-than=3d
+```
