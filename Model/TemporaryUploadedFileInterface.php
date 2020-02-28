@@ -33,4 +33,16 @@ interface TemporaryUploadedFileInterface
      * @param string $filename
      */
     public function setFilename($filename);
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt();
+
+    /**
+     * @param \DateTime $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\DateTime $createdAt);
 }
