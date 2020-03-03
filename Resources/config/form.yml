@@ -24,3 +24,9 @@ services:
             - '@sherlockode_afb.mapping_manager'
             - '@translator'
         tags: ['form.type']
+    sherlockode_afb.form.dependent_entity_type:
+        class: Sherlockode\AdvancedFormBundle\Form\Type\DependentEntityType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@translator'
+        tags: ['form.type']

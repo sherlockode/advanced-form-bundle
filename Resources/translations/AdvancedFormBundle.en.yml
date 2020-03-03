@@ -1,2 +1,4 @@
 upload:
     error_max_size: The file cannot be bigger than %maxSize%
+dependent_entity:
+    invalid_value: This value is not valid

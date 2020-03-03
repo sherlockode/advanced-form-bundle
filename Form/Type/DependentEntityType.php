@@ -2,17 +2,45 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class DependentEntityType
  */
 class DependentEntityType extends AbstractType
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * DependentEntityType constructor.
+     *
+     * @param EntityManagerInterface $em
+     * @param TranslatorInterface    $translator
+     */
+    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator)
+    {
+        $this->em = $em;
+        $this->translator = $translator;
+    }
+
     public function getParent()
     {
         return EntityType::class;
@@ -44,6 +72,25 @@ class DependentEntityType extends AbstractType
             'data-mapping' => json_encode($mapping),
             'data-dependent-ajax-url' => $options['ajax_url'],
         ]);
+    }
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($options) {
+            $data = $event->getData();
+            if (!$data) {
+                return;
+            }
+
+            $form = $event->getForm();
+            if (!$this->hasValidValue($form, $data, $options)) {
+                $form->addError(new FormError($this->translator->trans(
+                    'dependent_entity.invalid_value',
+                    [],
+                    'AdvancedFormBundle'
+                )));
+            }
+        });
     }
 
     private function processMapping(array $options, FormInterface $form)
@@ -119,5 +166,49 @@ class DependentEntityType extends AbstractType
         throw new \RuntimeException(
             sprintf('Could not find "%s" element in form.', $dependantElementName)
         );
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param string        $dependantElementName
+     *
+     * @return mixed
+     */
+    private function getDependentValue(FormInterface $form, $dependantElementName)
+    {
+        return $this->getDependentForm($form, $dependantElementName)->getData();
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param int           $value
+     * @param array         $options
+     *
+     * @return bool
+     */
+    private function hasValidValue(FormInterface $form, int $value, array $options): bool
+    {
+        $dependOnElementName = $options['dependOnElementName'];
+        $mapping = $this->processMapping($options, $form);
+        $dependOnValue = $this->getDependentValue($form, $dependOnElementName);
+
+        if (null === $options['mapping']) {
+            $object = $this->em->getRepository($options['class'])->findOneBy([
+                $dependOnElementName => $dependOnValue,
+                'id' => $value,
+            ]);
+
+            return null !== $object;
+        }
+
+        if (is_object($dependOnValue) && isset($mapping[$dependOnValue->getId()])) {
+            foreach ($mapping[$dependOnValue->getId()] as $row) {
+                if ($value === $row['id']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
