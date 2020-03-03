@@ -134,6 +134,7 @@ class UploadManager
         $obj->setKey($key);
         $obj->setToken(rand());
         $obj->setFilename($uploadedFile->getClientOriginalName());
+        $obj->setCreatedAt(new \DateTime());
 
         $this->em->persist($obj);
         $this->em->flush($obj);

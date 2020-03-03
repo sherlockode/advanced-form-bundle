@@ -3,7 +3,7 @@
 namespace Sherlockode\AdvancedFormBundle\Model;
 
 /**
- * Class UploadedFile
+ * Class TemporaryUploadedFile
  */
 class TemporaryUploadedFile implements TemporaryUploadedFileInterface
 {
@@ -21,6 +21,11 @@ class TemporaryUploadedFile implements TemporaryUploadedFileInterface
      * @var string
      */
     protected $filename;
+
+    /**
+     * @var \DateTime
+     */
+    protected $createdAt;
 
     /**
      * @return string
@@ -76,6 +81,26 @@ class TemporaryUploadedFile implements TemporaryUploadedFileInterface
     public function setFilename($filename)
     {
         $this->filename = $filename;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

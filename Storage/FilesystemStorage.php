@@ -2,8 +2,6 @@
 
 namespace Sherlockode\AdvancedFormBundle\Storage;
 
-use Symfony\Component\HttpFoundation\File\File;
-
 class FilesystemStorage implements StorageInterface
 {
     private $dir;
@@ -11,21 +9,6 @@ class FilesystemStorage implements StorageInterface
     public function __construct($dir)
     {
         $this->dir = $dir;
-    }
-
-    public function all()
-    {
-        $files = [];
-
-        if ($this->dir) {
-            foreach (new \DirectoryIterator($this->dir) as $fileInfo) {
-                if (!$fileInfo->isDot()) {
-                    $files[] = $fileInfo->getFilename();
-                }
-            }
-        }
-
-        return $files;
     }
 
     public function write($key, $data)
@@ -40,17 +23,20 @@ class FilesystemStorage implements StorageInterface
 
     public function remove($key)
     {
-        return unlink($this->dir  .'/' . $key);
-    }
-
-    public function getFileObject($key)
-    {
-        $path = sprintf('%s/%s', $this->dir, $key);
-
-        if (!file_exists($path)) {
-            return null;
+        if ($this->exists($key)) {
+            return unlink($this->getPath($key));
         }
 
-        return new File($path);
+        return false;
+    }
+
+    private function exists($key)
+    {
+        return file_exists($this->getPath($key));
+    }
+
+    private function getPath($key)
+    {
+        return $this->dir  .'/' . $key;
     }
 }
