@@ -114,11 +114,13 @@ class FileType extends AbstractType
         $view->vars['dropzoneLabel'] = $options['dropzone_label'];
 
         if ($isMultiple) {
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
-            $collection = $propertyAccessor->getValue($subject, $form->getName());
-            if ($collection instanceof Collection) {
-                foreach ($collection as $media) {
-                    $view->vars['files'][] = $media;
+            if ($subject !== null) {
+                $propertyAccessor = PropertyAccess::createPropertyAccessor();
+                $collection = $propertyAccessor->getValue($subject, $form->getName());
+                if ($collection instanceof Collection) {
+                    foreach ($collection as $media) {
+                        $view->vars['files'][] = $media;
+                    }
                 }
             }
         } else {
