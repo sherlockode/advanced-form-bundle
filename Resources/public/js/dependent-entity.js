@@ -1,3 +1,5 @@
+(function() {
+'use strict';
 let jQuery;
 
 if (typeof module === "object" && module.exports) {
@@ -7,8 +9,6 @@ if (typeof module === "object" && module.exports) {
 }
 
 jQuery(function ($) {
-    'use strict';
-
     // for JS-handled forms
     $('body').on('dependent_entity_created', 'select.dependent-entity', function(e) {
         handleElement($(e.target))
@@ -66,3 +66,5 @@ jQuery(function ($) {
         }
     }
 });
+
+})();
