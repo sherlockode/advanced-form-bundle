@@ -1,3 +1,5 @@
+(function() {
+'use strict';
 let jQuery;
 
 if (typeof module === "object" && module.exports) {
@@ -6,7 +8,7 @@ if (typeof module === "object" && module.exports) {
     jQuery = window.jQuery;
 }
 
-(function($) {
+let $ = jQuery;
     $.fn.AfbAjaxUploader = function(options) {
         let settings = $.extend({
             onXhrFail: baseOnXhrFail,
@@ -251,4 +253,4 @@ if (typeof module === "object" && module.exports) {
             });
         });
     };
-}(jQuery));
+})();
