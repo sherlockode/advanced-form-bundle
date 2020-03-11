@@ -139,8 +139,9 @@ let $ = jQuery;
 
             function filePreview(uploadId, file){
                 var item = prototype.replace(/__UPLOAD_ID__/g, uploadId)
-                        .replace(/__FILE_NAME__/g, file.name);
+                    .replace(/__FILE_NAME__/g, file.name);
                 item = $(item);
+
                 if (uploadMode === 'temporary') {
                     item.data('tmp', 1);
                 }
@@ -181,17 +182,20 @@ let $ = jQuery;
 
             function deletePreview(element, removeFromServer){
                 if (removeFromServer) {
-                    if (element.closest('.afb_item').data('tmp')) {
-                        removeFile(element.closest('.afb_item').find('[name$=\\[token\\]]').val(), true);
+                    let isTmp = 1 === element.closest('.afb_item').data('tmp'),
+                        elId = subjectId;
+
+                    if (isTmp) {
+                        elId = element.closest('.afb_item').find('[name$=\\[token\\]]').val();
                     } else if (isMultiple) {
-                        var pictureId = element.data('id');
-                        if (pictureId) {
-                            removeFile(pictureId);
-                        }
-                    } else {
-                        removeFile(subjectId, false);
+                        elId = element.data('id');
+                    }
+
+                    if (elId) {
+                        removeFile(elId, isTmp);
                     }
                 }
+
                 element.closest('.afb_item').remove();
                 if (container.find('.afb_item').length === 0) {
                     container.find('.afb_dropzone').show();
@@ -210,13 +214,12 @@ let $ = jQuery;
 
             function removeFile(id, isTmp){
                 var formData = new FormData();
-                var url = removeUrl;
+                var url = isTmp ? removeTmpUrl : removeUrl;
                 if (!isTmp) {
                     formData.append('afb_remove_file[mapping]', mapping);
                     formData.append('afb_remove_file[id]', id);
                 } else {
                     formData.append('token', id);
-                    url = removeTmpUrl;
                 }
                 if (isMultiple) {
                     formData.append('afb_remove_file[remove]', 1);
