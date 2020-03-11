@@ -26,6 +26,9 @@ class TemporaryFileCollectionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer(new CallbackTransformer(function ($data) use ($options) {
+            if (null === $data) {
+                return [];
+            }
             $newData = [];
             $mapping = $options['mapping'];
             $propertyAccessor = PropertyAccess::createPropertyAccessor();
