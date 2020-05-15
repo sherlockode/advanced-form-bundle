@@ -2,8 +2,6 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
-use Sherlockode\AdvancedFormBundle\Event\UploadEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -13,16 +11,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class TemporaryFileCollectionType extends AbstractType
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer(new CallbackTransformer(function ($data) use ($options) {
@@ -48,7 +36,6 @@ class TemporaryFileCollectionType extends AbstractType
             foreach ($data as $uploadedFile) {
                 $fileContainer = new $fileClass();
                 $propertyAccessor->setValue($fileContainer, $mapping->fileProperty, $uploadedFile);
-                $this->eventDispatcher->dispatch('afb.post_upload', new UploadEvent($fileContainer, $mapping, $uploadedFile));
                 $files[] = $fileContainer;
             }
 
