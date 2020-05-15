@@ -9,6 +9,7 @@ use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -106,12 +107,13 @@ class FileUploadController extends AbstractController
      */
     public function uploadTmpAction(Request $request)
     {
-        $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
-        $form->handleRequest($request);
+        $form = $this->createForm(FileType::class, null, ['csrf_protection' => false]);
+        $form->submit($request->files->get('afb_upload_file')['file']);
+
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 try {
-                    $uploadedFile = $form->get('file')->getData();
+                    $uploadedFile = $form->getData();
                     $file = $this->uploadManager->uploadTemporary($uploadedFile);
 
                     return new JsonResponse([
