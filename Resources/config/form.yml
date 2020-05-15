@@ -9,8 +9,6 @@ services:
         tags: ['form.type']
     sherlockode_afb.file.collection_type:
         class: Sherlockode\AdvancedFormBundle\Form\Type\TemporaryFileCollectionType
-        arguments:
-            - '@event_dispatcher'
         tags: ['form.type']
     sherlockode_afb.file.tmp_type:
         class: Sherlockode\AdvancedFormBundle\Form\Type\TemporaryUploadedFileType

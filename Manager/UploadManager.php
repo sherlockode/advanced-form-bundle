@@ -3,12 +3,9 @@
 namespace Sherlockode\AdvancedFormBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sherlockode\AdvancedFormBundle\Event\RemoveUploadEvent;
-use Sherlockode\AdvancedFormBundle\Event\UploadEvent;
 use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
 use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -23,11 +20,6 @@ class UploadManager
      * @var MappingManager
      */
     private $mappingManager;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * @var StorageInterface
@@ -46,20 +38,17 @@ class UploadManager
      *
      * @param EntityManagerInterface   $em
      * @param MappingManager           $mappingManager
-     * @param EventDispatcherInterface $eventDispatcher
      * @param StorageInterface         $tmpStorage
      * @param string|null              $tmpUploadedFileClass
      */
     public function __construct(
         EntityManagerInterface $em,
         MappingManager $mappingManager,
-        EventDispatcherInterface $eventDispatcher,
         StorageInterface $tmpStorage,
         $tmpUploadedFileClass = null
     ) {
         $this->em = $em;
         $this->mappingManager = $mappingManager;
-        $this->eventDispatcher = $eventDispatcher;
         $this->tmpStorage = $tmpStorage;
         $this->tmpUploadedFileClass = $tmpUploadedFileClass;
     }
@@ -92,9 +81,9 @@ class UploadManager
                 throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
             }
         }
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
         if ($isMultiple) {
             $fileContainer = new $containerEntityClass();
-            $propertyAccessor = PropertyAccess::createPropertyAccessor();
             $files = $propertyAccessor->getValue($subject, $mapping->fileCollectionProperty);
             if ($files instanceof \Traversable) {
                 $files = iterator_to_array($files);
@@ -103,10 +92,9 @@ class UploadManager
             $propertyAccessor->setValue($subject, $mapping->fileCollectionProperty, $files);
             $subject = $fileContainer;
         }
-
+        $propertyAccessor->setValue($subject, $mapping->fileProperty, $uploadedFile);
         $handler = $this->getHandler($mapping, $subject);
         $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
-        $this->eventDispatcher->dispatch('afb.post_upload', new UploadEvent($subject, $mapping, $uploadedFile));
 
         $this->em->persist($subject);
         $this->em->flush();
@@ -170,7 +158,6 @@ class UploadManager
             $handler = $this->getHandler($mapping, $subject);
             $field = $mapping->fileProperty;
             $handler->remove($subject, $field);
-            $this->eventDispatcher->dispatch('afb.post_remove_upload', new RemoveUploadEvent($subject, $mapping));
             if ($deleteObject || $mapping->multiple) {
                 $this->em->remove($subject);
             }
