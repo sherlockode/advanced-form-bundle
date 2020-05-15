@@ -19,7 +19,6 @@ services:
         class: Sherlockode\AdvancedFormBundle\Manager\UploadManager
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@sherlockode_afb.mapping_manager'
             - '@sherlockode_afb.storage.tmp_storage'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
 

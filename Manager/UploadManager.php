@@ -17,11 +17,6 @@ class UploadManager
     private $em;
 
     /**
-     * @var MappingManager
-     */
-    private $mappingManager;
-
-    /**
      * @var StorageInterface
      */
     private $tmpStorage;
@@ -37,18 +32,15 @@ class UploadManager
      * UploadManager constructor.
      *
      * @param EntityManagerInterface   $em
-     * @param MappingManager           $mappingManager
      * @param StorageInterface         $tmpStorage
      * @param string|null              $tmpUploadedFileClass
      */
     public function __construct(
         EntityManagerInterface $em,
-        MappingManager $mappingManager,
         StorageInterface $tmpStorage,
         $tmpUploadedFileClass = null
     ) {
         $this->em = $em;
-        $this->mappingManager = $mappingManager;
         $this->tmpStorage = $tmpStorage;
         $this->tmpUploadedFileClass = $tmpUploadedFileClass;
     }
@@ -60,29 +52,27 @@ class UploadManager
 
     /**
      * @param UploadedFile $uploadedFile
-     * @param string|null  $type
+     * @param Mapping      $mapping
      * @param int|null     $id
      *
      * @return object
      * @throws \Exception
      */
-    public function upload(UploadedFile $uploadedFile, $type, $id = null)
+    public function upload(UploadedFile $uploadedFile, Mapping $mapping, $id = null)
     {
-        $mapping = $this->mappingManager->getMapping($type);
         $entityClass = $mapping->class;
-        $containerEntityClass = $mapping->fileClass;
-        $isMultiple = $mapping->multiple;
 
         if ($id === null) {
             $subject = new $entityClass();
         } else {
             $subject = $this->em->getRepository($entityClass)->find($id);
             if (null === $subject) {
-                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
+                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $mapping->id, $id));
             }
         }
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        if ($isMultiple) {
+        if ($mapping->multiple) {
+            $containerEntityClass = $mapping->fileClass;
             $fileContainer = new $containerEntityClass();
             $files = $propertyAccessor->getValue($subject, $mapping->fileCollectionProperty);
             if ($files instanceof \Traversable) {
@@ -141,19 +131,18 @@ class UploadManager
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @param bool   $deleteObject
+     * @param Mapping $mapping
+     * @param int     $id
+     * @param bool    $deleteObject
      *
      * @throws \Exception
      */
-    public function remove($type, $id, $deleteObject = false)
+    public function remove($mapping, $id, $deleteObject = false)
     {
-        if (null !== $type && null !== $id) {
-            $mapping = $this->mappingManager->getMapping($type);
+        if (null !== $id) {
             $subject = $this->em->getRepository($mapping->fileClass)->find($id);
             if (null === $subject) {
-                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $type, $id));
+                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $mapping->id, $id));
             }
             $handler = $this->getHandler($mapping, $subject);
             $field = $mapping->fileProperty;
