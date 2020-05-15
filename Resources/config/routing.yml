@@ -8,12 +8,12 @@ sherlockode_afb_remove:
 
 sherlockode_afb_upload_tmp:
     path: /sherlockodeadvancedform/upload_tmp
-    defaults: { _controller: sherlockode_afb.file_upload.controller:uploadTmpAction }
+    defaults: { _controller: sherlockode_afb.file_upload.temporary_upload_controller:uploadTmpAction }
 
 sherlockode_afb_remove_tmp:
     path: /sherlockodeadvancedform/remove_tmp
-    defaults: { _controller: sherlockode_afb.file_upload.controller:removeTmpFileAction }
+    defaults: { _controller: sherlockode_afb.file_upload.temporary_upload_controller:removeTmpFileAction }
 
 sherlockode_afb_preview:
     path: /sherlockodeadvancedform/uploaded/{token}
-    defaults: { _controller: sherlockode_afb.file_upload.controller:viewUploadedFileAction }
+    defaults: { _controller: sherlockode_afb.file_upload.temporary_upload_controller:viewUploadedFileAction }
