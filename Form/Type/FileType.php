@@ -147,9 +147,10 @@ class FileType extends AbstractType
         $isMultiple = $mapping->multiple;
 
         if ($isMultiple) {
-            $builder->add('files', TemporaryFileCollectionType::class, [
+            $builder->add('files', FileCollectionType::class, [
                 'entry_options' => ['temporary_path' => $this->temporaryPath],
                 'mapping' => $mapping,
+                'mode' => 'temporary',
             ]);
 
         } else {

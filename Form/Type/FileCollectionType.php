@@ -5,11 +5,13 @@ namespace Sherlockode\AdvancedFormBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FileType as SymfonyFileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class TemporaryFileCollectionType extends AbstractType
+class FileCollectionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -46,9 +48,12 @@ class TemporaryFileCollectionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'entry_type' => TemporaryUploadedFileType::class,
+            'entry_type' => function (Options $options) {
+                return $options['mode'] === 'temporary' ? TemporaryUploadedFileType::class : SymfonyFileType::class;
+            },
             'allow_add' => true,
             'allow_delete' => false,
+            'mode' => 'temporary',
         ]);
 
         $resolver->setRequired('mapping');

@@ -7,7 +7,6 @@ use Sherlockode\AdvancedFormBundle\Model\TemporaryUploadedFileInterface;
 use Sherlockode\AdvancedFormBundle\Storage\StorageInterface;
 use Sherlockode\AdvancedFormBundle\UploadHandler\UploadHandlerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class UploadManager
 {
@@ -53,41 +52,15 @@ class UploadManager
     /**
      * @param UploadedFile $uploadedFile
      * @param Mapping      $mapping
-     * @param int|null     $id
+     * @param mixed        $subject
      *
      * @return object
      * @throws \Exception
      */
-    public function upload(UploadedFile $uploadedFile, Mapping $mapping, $id = null)
+    public function upload(UploadedFile $uploadedFile, Mapping $mapping, $subject)
     {
-        $entityClass = $mapping->class;
-
-        if ($id === null) {
-            $subject = new $entityClass();
-        } else {
-            $subject = $this->em->getRepository($entityClass)->find($id);
-            if (null === $subject) {
-                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $mapping->id, $id));
-            }
-        }
-        $propertyAccessor = PropertyAccess::createPropertyAccessor();
-        if ($mapping->multiple) {
-            $containerEntityClass = $mapping->fileClass;
-            $fileContainer = new $containerEntityClass();
-            $files = $propertyAccessor->getValue($subject, $mapping->fileCollectionProperty);
-            if ($files instanceof \Traversable) {
-                $files = iterator_to_array($files);
-            }
-            $files[] = $fileContainer;
-            $propertyAccessor->setValue($subject, $mapping->fileCollectionProperty, $files);
-            $subject = $fileContainer;
-        }
-        $propertyAccessor->setValue($subject, $mapping->fileProperty, $uploadedFile);
         $handler = $this->getHandler($mapping, $subject);
         $handler->upload($subject, $mapping->fileProperty, $uploadedFile);
-
-        $this->em->persist($subject);
-        $this->em->flush();
 
         return $subject;
     }
@@ -132,26 +105,18 @@ class UploadManager
 
     /**
      * @param Mapping $mapping
-     * @param int     $id
-     * @param bool    $deleteObject
-     *
-     * @throws \Exception
+     * @param object  $subject
      */
-    public function remove($mapping, $id, $deleteObject = false)
+    public function remove(Mapping $mapping, $subject)
     {
-        if (null !== $id) {
-            $subject = $this->em->getRepository($mapping->fileClass)->find($id);
-            if (null === $subject) {
-                throw new \Exception(sprintf('Cannot find object of type "%s" with id %s.', $mapping->id, $id));
-            }
-            $handler = $this->getHandler($mapping, $subject);
-            $field = $mapping->fileProperty;
-            $handler->remove($subject, $field);
-            if ($deleteObject || $mapping->multiple) {
-                $this->em->remove($subject);
-            }
-            $this->em->flush();
+        $handler = $this->getHandler($mapping, $subject);
+        $field = $mapping->fileProperty;
+        $handler->remove($subject, $field);
+        if ($mapping->multiple) {
+            // delete the now empty "file entity"
+            $this->em->remove($subject);
         }
+        $this->em->flush();
     }
 
     /**
