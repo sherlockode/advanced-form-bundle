@@ -50,9 +50,10 @@ class FileUploadController extends AbstractController
             if ($form->isValid()) {
                 $uploadedFile = $form->get('file')->getData();
                 try {
+                    $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
                     $object = $this->uploadManager->upload(
                         $uploadedFile,
-                        $form->get('mapping')->getData(),
+                        $mapping,
                         $form->get('id')->getData()
                     );
 
@@ -60,7 +61,7 @@ class FileUploadController extends AbstractController
                         'id' => $object->getId(),
                         'filename' => $uploadedFile->getClientOriginalName(),
                     ];
-                    $routeInfo = $this->mappingManager->getMapping($form->get('mapping')->getData())->route;
+                    $routeInfo = $mapping->route;
                     if (null !== $routeInfo) {
                         $params = [];
                         foreach ($routeInfo['parameters'] as $key => $parameter) {
@@ -97,8 +98,9 @@ class FileUploadController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
+                $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
                 $this->uploadManager->remove(
-                    $form->get('mapping')->getData(),
+                    $mapping,
                     $form->get('id')->getData(),
                     $form->get('remove')->getData()
                 );
