@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "symfony/framework-bundle": "^3.4|^4.0",
+        "symfony/framework-bundle": "^3.4|^4.0|^5.0",
         "twig/twig": "^2.0"
     },
     "suggest": {
@@ -19,10 +19,5 @@
     },
     "autoload": {
         "psr-4": { "Sherlockode\\AdvancedFormBundle\\": "" }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
     }
 }
