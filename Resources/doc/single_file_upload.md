@@ -150,7 +150,7 @@ sherlockode_advanced_form:
         people:                                 # a name for the mapping, useful in forms configuration
             class: App\Entity\People            # the mapped entity
             file_property: imageFile            # the name of the entity property to use
-            handler: property                   # the upload handler for this mapping
+            handler: vich                       # the upload handler for this mapping
             storage: picture                    # the storage name
 ```
 
@@ -165,7 +165,7 @@ We can now create our form:
 ```php
 <?php
 
-namespace AppBundle\Form;
+namespace App\Form;
 
 use App\Entity\People;
 use Sherlockode\AdvancedFormBundle\Form\Type\FileType;
@@ -213,16 +213,16 @@ You can then define a simple controller using the form:
 ```php
 <?php
 
-namespace AppBundle\Controller;
+namespace App\Controller;
 
 use App\Entity\People;
-use AppBundle\Form\PeopleType;
+use App\Form\PeopleType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-class PeopleController extends Controller
+class PeopleController extends AbstractController
 {
     /**
      * @Route("/people/{people}", name="people_form")

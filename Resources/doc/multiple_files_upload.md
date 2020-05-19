@@ -195,7 +195,7 @@ sherlockode_advanced_form:
             file_class: App\Entity\Picture        # you need to indicate the class holding the picture data
             file_property: imageFile              # property used in the picture object to hold the filename
             file_collection_property: pictures    # property in the Product targeting the picture collection
-            handler: property
+            handler: vich
             storage: product_picture
 ```
 
@@ -204,7 +204,7 @@ Let's create the form:
 ```php
 <?php
 
-namespace AppBundle\Form;
+namespace App\Form;
 
 use Sherlockode\AdvancedFormBundle\Form\Type\FileType;
 use Symfony\Component\Form\AbstractType;
@@ -233,18 +233,18 @@ class ProductType extends AbstractType
 
 Then the controller:
 
-``` php
+```php
 <?php
 
-namespace AppBundle\Controller;
+namespace App\Controller;
 
 use App\Entity\Product;
-use AppBundle\Form\ProductType;
+use App\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
-class ProductController extends Controller
+class ProductController extends AbstractController
 {
     public function indexAction(Request $request, EntityManagerInterface $em, Product $product = null)
     {
@@ -261,7 +261,7 @@ class ProductController extends Controller
             return $this->redirectToRoute('product_form', ['product' => $product->getId()]);
         }
 
-        return $this->render('@App/Product/form.html.twig', [
+        return $this->render('Product/form.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -272,7 +272,7 @@ class ProductController extends Controller
 And to finish, let's create the view
 
 ```twig
-{% extends "/base.html.twig" %}
+{% extends "base.html.twig" %}
 
 {% block body %}
     <div class="container">
