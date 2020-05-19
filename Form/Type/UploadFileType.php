@@ -52,17 +52,23 @@ class UploadFileType extends AbstractType
                 'mapped' => !$mapping->multiple,
                 'constraints' => array_map(function ($class) {
                     return new $class;
-                }, $mapping->constraints ?? [])
-
+                }, $mapping->constraints ?? []),
             ])
+            // special field to allow getting the fileContainer object after submission
+            ->add('fileContainer', null, [
+                'mapped' => false,
+            ]);
         ;
 
-        if ($mapping->multiple) {
-            $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($mapping) {
-                // $data is the main entity
-                $data = $event->getData();
-                $form = $event->getForm();
+        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($mapping) {
+            // $data is the main entity
+            $data = $event->getData();
+            $form = $event->getForm();
 
+            // if not multiple, the file container is the main entity
+            $fileContainer = $data;
+
+            if ($mapping->multiple) {
                 $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
                 // create file container object
@@ -78,10 +84,10 @@ class UploadFileType extends AbstractType
                 }
                 $files[] = $fileContainer;
                 $propertyAccessor->setValue($data, $mapping->fileCollectionProperty, $files);
-
-                return $data;
-            });
-        }
+            }
+            $form->add('fileContainer', null, ['mapped' => false]);
+            $form->get('fileContainer')->setData($fileContainer);
+        });
 
         $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($mapping) {
             $form = $event->getForm();
