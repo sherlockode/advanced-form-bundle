@@ -2,15 +2,18 @@
 
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
+use Sherlockode\AdvancedFormBundle\Manager\Mapping;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UploadFileType extends AbstractType
@@ -41,42 +44,54 @@ class UploadFileType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Mapping $mapping */
+        $mapping = $options['mapping'];
+
         $builder
-            ->add('file', FileType::class)
-            ->add('mapping', TextType::class)
-            ->add('id', IntegerType::class, [
-                'required' => false,
+            ->add($mapping->fileProperty, FileType::class, [
+                'mapped' => !$mapping->multiple,
+                'constraints' => array_map(function ($class) {
+                    return new $class;
+                }, $mapping->constraints ?? [])
+
             ])
         ;
 
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-            $data = $event->getData();
+        if ($mapping->multiple) {
+            $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($mapping) {
+                // $data is the main entity
+                $data = $event->getData();
+                $form = $event->getForm();
 
-            if (isset($data['mapping'])) {
-                $mapping = $this->mappingManager->getMapping($data['mapping']);
+                $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-                if ($mapping && $mapping->constraints) {
-                    $form = $event->getForm();
-                    $form->remove('file', FileType::class);
-                    $form->add('file', FileType::class, [
-                        'constraints' => array_map(function ($class) {
-                            return new $class;
-                        }, $mapping->constraints)
-                    ]);
+                // create file container object
+                $uploadedFile = $form->get($mapping->fileProperty)->getData();
+                $containerEntityClass = $mapping->fileClass;
+                $fileContainer = new $containerEntityClass();
+                $propertyAccessor->setValue($fileContainer, $mapping->fileProperty, $uploadedFile);
+
+                // update the file collection
+                $files = $propertyAccessor->getValue($data, $mapping->fileCollectionProperty);
+                if ($files instanceof \Traversable) {
+                    $files = iterator_to_array($files);
                 }
-            }
-        });
+                $files[] = $fileContainer;
+                $propertyAccessor->setValue($data, $mapping->fileCollectionProperty, $files);
 
-        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event){
+                return $data;
+            });
+        }
+
+        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) use ($mapping) {
             $form = $event->getForm();
-            $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
             $intMaxSize = $mapping->intMaxSize;
 
             if ($intMaxSize === null) {
                 return;
             }
 
-            if ($form->get('file')->getData()->getSize() > $intMaxSize) {
+            if ($form->get($mapping->fileProperty)->getData()->getSize() > $intMaxSize) {
                 $form->addError(new FormError(
                     $this->translator->trans('upload.error_max_size', [
                         '%maxSize%' => $mapping->maxSize
@@ -84,6 +99,11 @@ class UploadFileType extends AbstractType
                 ));
             }
         });
+    }
+
+    public function configureOptions(OptionsResolver $optionsResolver)
+    {
+        $optionsResolver->setRequired(['mapping']);
     }
 
     /**

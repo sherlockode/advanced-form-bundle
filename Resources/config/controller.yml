@@ -5,6 +5,7 @@ services:
         arguments:
             - '@sherlockode_afb.upload_manager'
             - '@sherlockode_afb.mapping_manager'
+            - '@doctrine.orm.entity_manager'
     sherlockode_afb.file_upload.temporary_upload_controller:
         class: Sherlockode\AdvancedFormBundle\Controller\TemporaryFileUploadController
         public: true

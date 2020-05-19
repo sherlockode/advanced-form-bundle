@@ -221,9 +221,6 @@ let $ = jQuery;
                 } else {
                     formData.append('token', id);
                 }
-                if (isMultiple) {
-                    formData.append('afb_remove_file[remove]', 1);
-                }
                 $.ajax({
                     url: url,
                     type: 'POST',

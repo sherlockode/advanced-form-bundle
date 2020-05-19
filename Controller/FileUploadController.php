@@ -2,7 +2,8 @@
 
 namespace Sherlockode\AdvancedFormBundle\Controller;
 
-use Sherlockode\AdvancedFormBundle\Form\Type\RemoveFileType;
+use Doctrine\ORM\EntityManagerInterface;
+use Sherlockode\AdvancedFormBundle\Form\Type\EntityMappingType;
 use Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
@@ -10,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 class FileUploadController extends AbstractController
 {
@@ -25,37 +25,43 @@ class FileUploadController extends AbstractController
     private $mappingManager;
 
     /**
-     * FileUploadController constructor.
-     *
-     * @param UploadManager    $uploadManager
-     * @param MappingManager   $mappingManager
+     * @var EntityManagerInterface
      */
-    public function __construct($uploadManager, $mappingManager)
+    private $em;
+
+    /**
+     * @param UploadManager          $uploadManager
+     * @param MappingManager         $mappingManager
+     * @param EntityManagerInterface $em
+     */
+    public function __construct(UploadManager $uploadManager, MappingManager $mappingManager, EntityManagerInterface $em)
     {
         $this->uploadManager = $uploadManager;
         $this->mappingManager = $mappingManager;
+        $this->em = $em;
     }
 
     /**
-     * @param Request        $request
+     * @param Request $request
      *
      * @return JsonResponse
-     * @throws \Exception
      */
     public function uploadFileAction(Request $request)
     {
-        $form = $this->createForm(UploadFileType::class, [], ['csrf_protection' => false]);
-        $form->handleRequest($request);
+        $data = $request->get('afb_upload_file');
+        $form = $this->createForm(EntityMappingType::class, [], ['csrf_protection' => false]);
+        $form->submit(['mapping' => $data['mapping'], 'entity' => $data['id']]);
+
+        $mapping = $form->getData()['mapping'];
+        $object = $form->getData()['entity'];
+
+        $form = $this->createForm(UploadFileType::class, $object, ['csrf_protection' => false, 'mapping' => $mapping]);
+        $form->submit([$mapping->fileProperty => $request->files->get('afb_upload_file')['file']]);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
                 $uploadedFile = $form->get('file')->getData();
                 try {
-                    $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
-                    $object = $this->uploadManager->upload(
-                        $uploadedFile,
-                        $mapping,
-                        $form->get('id')->getData()
-                    );
+                    $this->em->flush();
 
                     $data = [
                         'id' => $object->getId(),
@@ -84,9 +90,7 @@ class FileUploadController extends AbstractController
     }
 
     /**
-     * @Route("/sherlockodeadvancedform/remove", name="sherlockode_afb_remove")
-     *
-     * @param Request       $request
+     * @param Request $request
      *
      * @throws \Exception
      *
@@ -94,23 +98,22 @@ class FileUploadController extends AbstractController
      */
     public function removeFileAction(Request $request)
     {
-        $form = $this->createForm(RemoveFileType::class, [], ['csrf_protection' => false]);
-        $form->handleRequest($request);
+        $data = $request->get('afb_remove_file');
+        $form = $this->createForm(EntityMappingType::class, [], ['csrf_protection' => false]);
+        $form->submit(['mapping' => $data['mapping'], 'fileEntity' => $data['id']]);
+
+        $mapping = $form->getData()['mapping'];
+        $object = $form->getData()['fileEntity'];
+
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $mapping = $this->mappingManager->getMapping($form->get('mapping')->getData());
-                $this->uploadManager->remove(
-                    $mapping,
-                    $form->get('id')->getData(),
-                    $form->get('remove')->getData()
-                );
-            } catch (\Exception $e) {
-                throw $e;
-            }
+            $this->uploadManager->remove(
+                $mapping,
+                $object
+            );
 
             return new JsonResponse();
         }
 
-        throw new \Exception('Invalid form');
+        return new JsonResponse([], 401);
     }
 }
