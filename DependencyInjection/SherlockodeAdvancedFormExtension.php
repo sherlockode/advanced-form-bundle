@@ -2,6 +2,7 @@
 
 namespace Sherlockode\AdvancedFormBundle\DependencyInjection;
 
+use Sherlockode\AdvancedFormBundle\DependentEntity\DependentMapperInterface;
 use Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -51,6 +52,9 @@ class SherlockodeAdvancedFormExtension extends Extension
                 $definition->addMethodCall('addHandler', [new Reference($id), $tag['alias'] ?? $id]);
             }
         }
+
+        $container->registerForAutoconfiguration(DependentMapperInterface::class)
+            ->addTag('sherlockode_afb.dependent_entity_mapper');
     }
 
     /**

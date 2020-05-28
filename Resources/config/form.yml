@@ -33,4 +33,6 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@translator'
+            - '@sherlockode_afb.dependent_entity.mapper_pool'
+            - '@router'
         tags: ['form.type']

@@ -40,3 +40,6 @@ services:
             - '@sherlockode_afb.upload_manager'
         tags:
             - { name: twig.extension }
+
+    sherlockode_afb.dependent_entity.mapper_pool:
+        class: Sherlockode\AdvancedFormBundle\DependentEntity\DependentMapperPool
