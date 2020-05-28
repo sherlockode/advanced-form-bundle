@@ -3,6 +3,7 @@
 namespace Sherlockode\AdvancedFormBundle\Form\Type;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Sherlockode\AdvancedFormBundle\DependentEntity\DependentMapperPool;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,6 +13,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -30,15 +32,33 @@ class DependentEntityType extends AbstractType
     private $translator;
 
     /**
+     * @var DependentMapperPool
+     */
+    private $mapperPool;
+
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
+
+    /**
      * DependentEntityType constructor.
      *
      * @param EntityManagerInterface $em
      * @param TranslatorInterface    $translator
+     * @param DependentMapperPool    $mapperPool
+     * @param UrlGeneratorInterface  $router
      */
-    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        TranslatorInterface $translator,
+        DependentMapperPool $mapperPool,
+        UrlGeneratorInterface $router
+    ) {
         $this->em = $em;
         $this->translator = $translator;
+        $this->mapperPool = $mapperPool;
+        $this->router = $router;
     }
 
     public function getParent()
@@ -59,18 +79,29 @@ class DependentEntityType extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        parent::buildView($view, $form, $options);
         $depend = $this->getDependentElement($view, $options['dependOnElementName']);
 
         $mapping = $this->processMapping($options, $form);
 
         $class = isset($view->vars['attr']['class']) ? $view->vars['attr']['class'] : '';
         $class = $class . ' ' . 'dependent-entity';
+
+        $ajaxUrl = $options['ajax_url'];
+        if ($ajaxUrl === true) {
+            if (!is_string($options['mapping'])) {
+                throw new \Exception(
+                    'In order to use ajax for dependent dropdown, '
+                    .'you need to use a mapper or provide the URL explicitly in ajax_url'
+                );
+            }
+            $ajaxUrl = $this->router->generate('sherlockode_afb_dependent_results', ['mapper' => $options['mapping']]);
+        }
+
         $view->vars['attr'] = array_merge($view->vars['attr'], [
             'class' => $class,
             'data-depend-on-element' => $depend->vars['id'],
             'data-mapping' => json_encode($mapping),
-            'data-dependent-ajax-url' => $options['ajax_url'],
+            'data-dependent-ajax-url' => $ajaxUrl,
         ]);
     }
 
@@ -95,14 +126,19 @@ class DependentEntityType extends AbstractType
 
     private function processMapping(array $options, FormInterface $form)
     {
-        if ($options['mapping'] === null) {
+        if ($options['mapping'] === null || $options['ajax_url'] !== null) {
             return [];
         }
 
-        if (is_array($options['mapping'])) {
-            $mapping = $options['mapping'];
+        $dependForm = $this->getDependentForm($form, $options['dependOnElementName']);
+        $mapping = [];
+        if (is_string($options['mapping'])) {
+            $mapper = $this->mapperPool->getMapper($options['mapping']);
+            foreach ($dependForm->getConfig()->getAttribute('choice_list')->getChoices() as $choice) {
+                list($k, $v) = $mapper->getMapping($choice);
+                $mapping[$k] = $v;
+            }
         } elseif (is_callable($options['mapping'])) {
-            $dependForm = $this->getDependentForm($form, $options['dependOnElementName']);
             $mapping = [];
             foreach ($dependForm->getConfig()->getAttribute('choice_list')->getChoices() as $choice) {
                 list($k, $v) = $options['mapping']($choice);
@@ -111,7 +147,7 @@ class DependentEntityType extends AbstractType
         } else {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'The "%s" option only supports array or callable, %s received.',
+                    'The "%s" option only supports string or callable, %s received.',
                     'mapping',
                     gettype($options['mapping'])
                 )

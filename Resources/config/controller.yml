@@ -13,3 +13,10 @@ services:
             - '@sherlockode_afb.upload_manager'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
             - '@sherlockode_afb.storage.tmp_storage'
+
+    sherlockode_afb.dependent_entity.controller:
+        class: Sherlockode\AdvancedFormBundle\Controller\DependentEntityController
+        public: true
+        arguments:
+            - '@event_dispatcher'
+            - '@sherlockode_afb.dependent_entity.mapper_pool'
