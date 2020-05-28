@@ -188,18 +188,14 @@ class DependentEntityType extends AbstractType
      */
     private function hasValidValue(FormInterface $form, int $value, array $options): bool
     {
+        if (null === $options['mapping']) {
+            // if no mapping is provided, we cannot check the data
+            return true;
+        }
+
         $dependOnElementName = $options['dependOnElementName'];
         $mapping = $this->processMapping($options, $form);
         $dependOnValue = $this->getDependentValue($form, $dependOnElementName);
-
-        if (null === $options['mapping']) {
-            $object = $this->em->getRepository($options['class'])->findOneBy([
-                $dependOnElementName => $dependOnValue,
-                'id' => $value,
-            ]);
-
-            return null !== $object;
-        }
 
         if (is_object($dependOnValue) && isset($mapping[$dependOnValue->getId()])) {
             foreach ($mapping[$dependOnValue->getId()] as $row) {
