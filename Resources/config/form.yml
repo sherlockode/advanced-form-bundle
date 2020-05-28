@@ -14,7 +14,7 @@ services:
             - '%sherlockode_afb.tmp_uploaded_file_dir%'
         tags: ['form.type']
     sherlockode_afb.file.collection_type:
-        class: Sherlockode\AdvancedFormBundle\Form\Type\TemporaryFileCollectionType
+        class: Sherlockode\AdvancedFormBundle\Form\Type\FileCollectionType
         tags: ['form.type']
     sherlockode_afb.file.tmp_type:
         class: Sherlockode\AdvancedFormBundle\Form\Type\TemporaryUploadedFileType
