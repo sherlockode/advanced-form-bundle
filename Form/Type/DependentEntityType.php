@@ -126,7 +126,7 @@ class DependentEntityType extends AbstractType
 
     private function processMapping(array $options, FormInterface $form)
     {
-        if ($options['mapping'] === null || $options['ajax_url'] !== null) {
+        if ($options['mapping'] === null || is_string($options['ajax_url'])) {
             return [];
         }
 
