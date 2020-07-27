@@ -50,7 +50,6 @@ class DependentEntityController extends AbstractController
         }
 
         $event = new GetResponseDependentResultEvent($mapper, $entity);
-        $this->eventDispatcher->dispatch($event);
         if (Kernel::VERSION_ID < 40300) {
             $this->eventDispatcher->dispatch(get_class($event), $event);
         } else {

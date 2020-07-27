@@ -3,14 +3,18 @@
 namespace Sherlockode\AdvancedFormBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Sherlockode\AdvancedFormBundle\Event\GetResponseRemoveFileEvent;
+use Sherlockode\AdvancedFormBundle\Event\GetResponseUploadFileEvent;
 use Sherlockode\AdvancedFormBundle\Form\Type\EntityMappingType;
 use Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType;
 use Sherlockode\AdvancedFormBundle\Manager\MappingManager;
 use Sherlockode\AdvancedFormBundle\Manager\UploadManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
 
 class FileUploadController extends AbstractController
 {
@@ -30,15 +34,26 @@ class FileUploadController extends AbstractController
     private $em;
 
     /**
-     * @param UploadManager          $uploadManager
-     * @param MappingManager         $mappingManager
-     * @param EntityManagerInterface $em
+     * @var EventDispatcherInterface
      */
-    public function __construct(UploadManager $uploadManager, MappingManager $mappingManager, EntityManagerInterface $em)
-    {
+    private $eventDispatcher;
+
+    /**
+     * @param UploadManager            $uploadManager
+     * @param MappingManager           $mappingManager
+     * @param EntityManagerInterface   $em
+     * @param EventDispatcherInterface $eventDispatcher
+     */
+    public function __construct(
+        UploadManager $uploadManager,
+        MappingManager $mappingManager,
+        EntityManagerInterface $em,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->uploadManager = $uploadManager;
         $this->mappingManager = $mappingManager;
         $this->em = $em;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -54,6 +69,16 @@ class FileUploadController extends AbstractController
 
         $mapping = $form->getData()['mapping'];
         $object = $form->getData()['entity'];
+
+        $event = new GetResponseUploadFileEvent($mapping->id, $object);
+        if (Kernel::VERSION_ID < 40300) {
+            $this->eventDispatcher->dispatch(get_class($event), $event);
+        } else {
+            $this->eventDispatcher->dispatch($event);
+        }
+        if ($event->getResponse() !== null) {
+            return $event->getResponse();
+        }
 
         $form = $this->createForm(UploadFileType::class, $object, ['csrf_protection' => false, 'mapping' => $mapping]);
         $form->submit([$mapping->fileProperty => $request->files->get('afb_upload_file')['file']]);
@@ -105,6 +130,16 @@ class FileUploadController extends AbstractController
 
         $mapping = $form->getData()['mapping'];
         $object = $form->getData()['fileEntity'];
+
+        $event = new GetResponseRemoveFileEvent($mapping->id, $object);
+        if (Kernel::VERSION_ID < 40300) {
+            $this->eventDispatcher->dispatch(get_class($event), $event);
+        } else {
+            $this->eventDispatcher->dispatch($event);
+        }
+        if ($event->getResponse() !== null) {
+            return $event->getResponse();
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->uploadManager->remove(
