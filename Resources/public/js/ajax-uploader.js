@@ -192,10 +192,15 @@ let $ = jQuery;
                     }
 
                     if (elId) {
-                        removeFile(elId, isTmp);
+                        removeFile(elId, isTmp, function() { deleteFile(element) });
+                        return;
                     }
                 }
 
+                deleteFile(element);
+            }
+
+            function deleteFile(element) {
                 element.closest('.afb_item').remove();
                 if (container.find('.afb_item').length === 0) {
                     container.find('.afb_dropzone').show();
@@ -212,7 +217,7 @@ let $ = jQuery;
                 }
             }
 
-            function removeFile(id, isTmp){
+            function removeFile(id, isTmp, callback){
                 var formData = new FormData();
                 var url = isTmp ? removeTmpUrl : removeUrl;
                 if (!isTmp) {
@@ -227,6 +232,8 @@ let $ = jQuery;
                     data: formData,
                     contentType: false,
                     processData: false
+                }).done(function() {
+                    callback();
                 }).fail(onXhrFail);
             }
 

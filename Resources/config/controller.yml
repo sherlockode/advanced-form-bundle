@@ -6,6 +6,7 @@ services:
             - '@sherlockode_afb.upload_manager'
             - '@sherlockode_afb.mapping_manager'
             - '@doctrine.orm.entity_manager'
+            - '@event_dispatcher'
     sherlockode_afb.file_upload.temporary_upload_controller:
         class: Sherlockode\AdvancedFormBundle\Controller\TemporaryFileUploadController
         public: true
@@ -13,6 +14,7 @@ services:
             - '@sherlockode_afb.upload_manager'
             - '%sherlockode_afb.tmp_uploaded_file_class%'
             - '@sherlockode_afb.storage.tmp_storage'
+            - '@event_dispatcher'
 
     sherlockode_afb.dependent_entity.controller:
         class: Sherlockode\AdvancedFormBundle\Controller\DependentEntityController
