@@ -37,7 +37,7 @@ Import the routing in `config/routes.yml`
 
 ```yaml
 sherlockode_advanced_form:
-    resource: "@SherlockodeAdvancedFormBundle/Resources/config/routing.yml"
+    resource: "@SherlockodeAdvancedFormBundle/Resources/config/routing/all.yml"
 ```
 
 ### Step 4: Publish assets
