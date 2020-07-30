@@ -1,96 +1,237 @@
+.afb_file_container .afb_upload_container {
+    margin: 0;
+    padding: 0;
+}
+
 .afb_file_container .afb_dropzone {
-    width: 100%;
-    border: dashed 1px #acacac;
-    min-height: 80px;
+    padding: 20px;
     text-align: center;
+    cursor: pointer;
+    border: 2px dashed #EBEDF3;
+    border-radius: 0.42rem;
+}
+
+.afb_file_container .afb_dropzone {
+    text-align: center;
+    cursor: pointer;
+    border: 2px dashed #EBEDF3;
+    border-radius: 0.42rem;
     vertical-align: middle;
-    line-height: 80px;
+}
+
+.afb_file_container ul {
+    list-style-type: none;
+}
+
+.afb_file_container .afb_dropzone h5 {
+    margin: 2em 0;
+    font-size: 1rem;
+    font-weight: 400;
 }
 
 .afb_file_container .afb_dropzone.hover {
     border-color: #000;
     cursor: copy;
 }
-.afb_file_container .afb_dropzone > label {
-    display: block;
-}
+
 .afb_file_container .afb_dropzone .afb_file_input {
     display: none;
 }
 
-.afb_file_container .afb_upload_container {
-    margin: 20px 0 0;
-    padding: 0;
-    list-style: none;
+
+/*without preview option*/
+
+.afb_file_container .afb_upload_container.afb_no_preview .afb_item {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: .75rem;
+    border-radius: .42rem;
+    padding: .5rem 1rem;
+    background-color: #f3f6f9;
+}
+
+
+.afb_file_container .afb_upload_container.afb_no_preview .afb_details {
+    flex: 1;
     overflow: hidden;
-}
-
-.afb_file_container .afb_upload_container .afb_item {
-    display: block;
-    margin-bottom: 20px;
-}
-
-.afb_file_container .upload-details {
-    min-height: 25px;
-    overflow: hidden;
-    display: inline-block;
-}
-
-.afb_file_container .afb_upload_preview .upload-details {
-    display: block;
-}
-
-.afb_file_container .afb_filename {
-    width: 30%;
-}
-.afb_file_container .afb_upload_preview .afb_filename {
-    width: auto;
-}
-
-.afb_file_container .afb_file_progress {
-    border: 1px solid #ccc;
-    height: 25px;
+    text-overflow: ellipsis;
+    margin-top: auto;
+    margin-bottom: auto;
     width: 30%;
 }
 
-.afb_file_container .afb_upload_preview .afb_file_progress {
-    width: auto;
+.afb_file_container .afb_upload_container.afb_no_preview .afb_details .afb_filename {
+    display: inline;
 }
 
-.afb_file_container .afb_file_progress > div {
-    width: 0;
-    height: 100%;
-    background: #ffb822;
-}
-.afb_file_container .afb_file_progress.afb_file_upload_success > div {
-    background: #26b89a;
-}
-.afb_file_container .afb_file_progress.afb_file_upload_error > div {
-    background: #b83041;
-}
-.afb_file_container .afb_upload_preview .afb_remove_file.upload-details {
-    display: block;
-}
-.afb_file_container .afb_remove_file.upload-details {
+.afb_file_container .afb_upload_container.afb_no_preview .afb_remove_file {
     text-align: center;
     width: 25px;
     height: 25px;
-    background: #eee;
     border-radius: 50%;
     line-height: 25px;
     margin: auto;
 }
 
-.afb_file_container .afb_preview_item {
-    display: block;
-    float: left;
-    width: 33%;
+.afb_file_container .afb_upload_container.afb_no_preview .afb_file_progress {
+    width: 100px;
+    margin-left: 10px;
+}
+
+.afb_file_container .afb_upload_container.afb_no_preview .afb_file_progress > div {
+    width: 0;
+    height: 100%;
+    background: #ffb822;
+}
+
+.afb_file_container .afb_upload_container.afb_no_preview .afb_item.afb_upload_complete .afb_file_progress > div {
+    background: #26b89a;
+    transition: background 1s ease;
+}
+
+/*with preview option*/
+
+.afb_file_container .afb_dropzone-preview .afb_item {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin: 16px;
+    min-height: 100px;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_details {
+    position: absolute;
+    top: 20%;
+    left: 0;
+    opacity: 0;
+    font-size: 13px;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 2em 1em;
     text-align: center;
+    color: rgba(0, 0, 0, 0.9);
+    line-height: 150%;
 }
 
-.afb_file_container .afb_preview_item img {
+.afb_file_container .afb_dropzone-preview .afb_file_preview {
+    border-radius: 0.42rem;
+    overflow: hidden;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    display: block;
+    z-index: 10;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_file_preview img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 
+.afb_file_container .afb_dropzone-preview .afb_item:hover img {
+    transform: scale(1.05, 1.05);
+    filter: blur(8px);
+}
 
+.afb_file_container .afb_dropzone-preview .afb_item:hover .afb_details {
+    opacity: 1;
+    z-index: 51;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_filename:not(:hover) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_item:hover .afb_filename span {
+    background-color: rgba(255, 255, 255, .8);
+    padding: 0 0.4em;
+    border-radius: 3px;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_filename:hover span {
+    white-space: nowrap;
+}
+
+.afb_file_container .afb_dropzone-preview.dz-complete .afb_file_progress {
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_file_progress {
+    opacity: 1;
+    z-index: 100;
+    pointer-events: none;
+    position: absolute;
+    height: 16px;
+    left: 50%;
+    top: 50%;
+    margin-top: -8px;
+    width: 80px;
+    margin-left: -40px;
+    background: rgba(255, 255, 255, 0.9);
+    -webkit-transform: scale(1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_file_progress > div {
+    background: #333;
+    background: linear-gradient(to bottom, #666, #444);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    transition: width 300ms ease-in-out;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_upload_complete .afb_file_progress {
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_upload_progressing .afb_file_progress {
+    opacity: 1;
+    transition: all 0.2s linear;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_file_success-mark,
+.afb_file_container .afb_dropzone-preview .afb_file_error-mark {
+    pointer-events: none;
+    opacity: 0;
+    z-index: 50;
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    margin-left: -27px;
+    margin-top: -27px;
+}
+
+.afb_file_container .afb_dropzone-preview .afb_upload_complete .afb_file_success-mark {
+    opacity: 1;
+    animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.afb_file_container .afb_dropzone-preview .afb_remove_file {
+    position: absolute;
+    top: -12.5px;
+    right: -12.5px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 13px 0 rgba(0, 0, 0, .1);
+    width: 22px;
+    height: 22px;
+    z-index: 20;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.afb_file_container .afb_dropzone-preview.afb_dropzone-started .afb_dropzone-title {
+    display: none;
+}

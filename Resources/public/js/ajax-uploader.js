@@ -57,8 +57,6 @@ let $ = jQuery;
                 if (!isMultiple) {
                     if (files.length > 1) {
                         return alert('You can only upload one file');
-                    } else {
-                        container.find('.afb_dropzone').hide();
                     }
                 }
                 if (isAsync) {
@@ -80,6 +78,11 @@ let $ = jQuery;
             }
 
             function uploadFile(file, callback){
+                let dz = container.find('.afb_dropzone');
+                if (dz.length && !dz.hasClass('afb_dropzone-started')) {
+                    dz.addClass('afb_dropzone-started');
+                }
+
                 var formData = new FormData(),
                     xhr = new window.XMLHttpRequest(),
                     uploadId = uploadCounter;
@@ -98,6 +101,8 @@ let $ = jQuery;
                         xhr.upload.addEventListener("progress", function(evt) {
                             var progression = (evt.loaded * 100) / evt.total;
                             var listItem = container.find('.afb_upload_container .afb_preview_' + uploadId);
+
+                            listItem.addClass('afb_upload_progressing');
                             listItem.find('.afb_file_progress > div').css('width', progression + '%');
                         });
                         return xhr;
@@ -108,7 +113,11 @@ let $ = jQuery;
                     processData: false,
                     data: formData
                 }).done(function(response) {
-                    var previewElement = $('.afb_preview_' + uploadId);
+                    let  previewElement = $('.afb_preview_' + uploadId);
+
+                    previewElement.addClass('afb_upload_complete');
+                    previewElement.removeClass('afb_upload_progressing');
+
                     if (response.id) {
                         previewElement.find('.afb_remove_file').data('id', response.id);
                     }
@@ -203,7 +212,7 @@ let $ = jQuery;
             function deleteFile(element) {
                 element.closest('.afb_item').remove();
                 if (container.find('.afb_item').length === 0) {
-                    container.find('.afb_dropzone').show();
+                    container.find('.afb_dropzone').removeClass('afb_dropzone-started');
                 }
             }
 
@@ -257,6 +266,12 @@ let $ = jQuery;
                 triggerRemove(element, function() {
                     return deletePreview(element, true);
                 });
+            });
+
+            container.on('click', '.afb_dropzone', function(e) {
+                if (e.currentTarget === e.target || $(e.target).hasClass('afb_upload_container') || $(e.target).hasClass('afb_dropzone-title')) {
+                    $(this).find('.afb_file_input').click();
+                }
             });
         });
     };
