@@ -47,14 +47,14 @@
 {% endblock %}
 
 {% block dropzone %}
-    <div class="afb_dropzone {% if imagePreview %}afb_dropzone-preview{% endif %}"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
+    <label for="afb_file_input-{{ id }}" class="afb_dropzone {% if imagePreview %}afb_dropzone-preview{% endif %}"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
         <h5 class="afb_dropzone-title">{{ (dropzoneLabel ?? label)|trans({}, translation_domain) }}</h5>
         <input type="file" {% if multiple %}multiple{% endif %} class="afb_file_input" id="afb_file_input-{{ id }}"/>
 
         {% if true == imagePreview %}
             {{ block('file_list') }}
         {% endif %}
-    </div>
+    </label>
 {% endblock %}
 
 {% block file_list %}

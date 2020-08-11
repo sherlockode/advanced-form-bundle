@@ -4,14 +4,8 @@
 }
 
 .afb_file_container .afb_dropzone {
+    display: block;
     padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px dashed #EBEDF3;
-    border-radius: 0.42rem;
-}
-
-.afb_file_container .afb_dropzone {
     text-align: center;
     cursor: pointer;
     border: 2px dashed #EBEDF3;
