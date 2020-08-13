@@ -57,6 +57,8 @@ let $ = jQuery;
                 if (!isMultiple) {
                     if (files.length > 1) {
                         return alert('You can only upload one file');
+                    } else {
+                        container.find('.afb_dropzone').hide();
                     }
                 }
                 if (isAsync) {
@@ -213,6 +215,10 @@ let $ = jQuery;
                 element.closest('.afb_item').remove();
                 if (container.find('.afb_item').length === 0) {
                     container.find('.afb_dropzone').removeClass('afb_dropzone-started');
+
+                    if (!isMultiple) {
+                        container.find('.afb_dropzone').show();
+                    }
                 }
             }
 

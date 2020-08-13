@@ -1,6 +1,6 @@
 {% block afb_file_widget %}
     {% import _self as self %}
-    <div class="afb_file_container" {{ block('data_attributes') }}
+    <div class="afb_file_container {% if imagePreview %}with_preview{% endif %}" {{ block('data_attributes') }}
         {% with {progressBar: true, img: null, fileName:null, uploadId: null, file: null} %}
         data-prototype="{{ block('file_info')|e }}"
         {% endwith %}
@@ -10,7 +10,7 @@
             {{ block('dropzone') }}
             {% set disabled = false %}
         {% endif %}
-        {% if false == imagePreview %}
+        {% if false == imagePreview or false == multiple %}
             {{ block('file_list') }}
         {% endif %}
     </div>
@@ -47,11 +47,11 @@
 {% endblock %}
 
 {% block dropzone %}
-    <label for="afb_file_input-{{ id }}" class="afb_dropzone {% if imagePreview %}afb_dropzone-preview{% endif %}"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
+    <label for="afb_file_input-{{ id }}" class="afb_dropzone"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
         <h5 class="afb_dropzone-title">{{ (dropzoneLabel ?? label)|trans({}, translation_domain) }}</h5>
         <input type="file" {% if multiple %}multiple{% endif %} class="afb_file_input" id="afb_file_input-{{ id }}"/>
 
-        {% if true == imagePreview %}
+        {% if true == imagePreview and true == multiple %}
             {{ block('file_list') }}
         {% endif %}
     </label>

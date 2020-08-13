@@ -44,7 +44,6 @@
     background-color: #f3f6f9;
 }
 
-
 .afb_file_container .afb_upload_container.afb_no_preview .afb_filename {
     flex: 1;
     overflow: hidden;
@@ -80,15 +79,14 @@
 
 /*with preview option*/
 
-.afb_file_container .afb_dropzone-preview .afb_item {
+.afb_file_container.with_preview .afb_item {
     position: relative;
     display: inline-block;
     vertical-align: top;
     margin: 16px;
-    min-height: 100px;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_filename {
+.afb_file_container.with_preview .afb_filename {
     position: absolute;
     top: 40%;
     left: 0;
@@ -101,7 +99,7 @@
     line-height: 150%;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_file_preview {
+.afb_file_container.with_preview .afb_file_preview {
     border-radius: 0.42rem;
     overflow: hidden;
     width: 120px;
@@ -111,41 +109,41 @@
     z-index: 10;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_file_preview img {
+.afb_file_container.with_preview .afb_file_preview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_item:hover img {
+.afb_file_container.with_preview .afb_item:hover img {
     transform: scale(1.05, 1.05);
     filter: blur(8px);
 }
 
-.afb_file_container .afb_dropzone-preview .afb_item:hover .afb_filename {
+.afb_file_container.with_preview .afb_item:hover .afb_filename {
     opacity: 1;
     z-index: 51;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_filename:not(:hover) {
+.afb_file_container.with_preview .afb_filename:not(:hover) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_item .afb_filename span {
+.afb_file_container.with_preview .afb_item .afb_filename span {
     background-color: rgba(255, 255, 255, .8);
     padding: 0 0.4em;
     border-radius: 3px;
     white-space: nowrap;
 }
 
-.afb_file_container .afb_dropzone-preview.dz-complete .afb_file_progress {
+.afb_file_container.with_preview .dz-complete .afb_file_progress {
     opacity: 0;
     transition: opacity 0.4s ease-in;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_file_progress {
+.afb_file_container.with_preview .afb_file_progress {
     opacity: 1;
     z-index: 100;
     pointer-events: none;
@@ -161,7 +159,7 @@
     overflow: hidden;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_file_progress > div {
+.afb_file_container.with_preview .afb_file_progress > div {
     background: #333;
     background: linear-gradient(to bottom, #666, #444);
     position: absolute;
@@ -172,18 +170,18 @@
     transition: width 300ms ease-in-out;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_upload_complete .afb_file_progress {
+.afb_file_container.with_preview .afb_upload_complete .afb_file_progress {
     opacity: 0;
     transition: opacity 0.4s ease-in;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_upload_progressing .afb_file_progress {
+.afb_file_container.with_preview .afb_upload_progressing .afb_file_progress {
     opacity: 1;
     transition: all 0.2s linear;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_file_success-mark,
-.afb_file_container .afb_dropzone-preview .afb_file_error-mark {
+.afb_file_container.with_preview .afb_file_success-mark,
+.afb_file_container.with_preview .afb_file_error-mark {
     pointer-events: none;
     opacity: 0;
     z-index: 50;
@@ -195,12 +193,12 @@
     margin-top: -27px;
 }
 
-.afb_file_container .afb_dropzone-preview .afb_upload_complete .afb_file_success-mark {
+.afb_file_container.with_preview .afb_upload_complete .afb_file_success-mark {
     opacity: 1;
     animation: slide-in 3s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.afb_file_container .afb_dropzone-preview .afb_remove_file {
+.afb_file_container.with_preview .afb_remove_file {
     position: absolute;
     top: -12.5px;
     right: -12.5px;
@@ -216,6 +214,12 @@
     justify-content: center;
 }
 
-.afb_file_container .afb_dropzone-preview.afb_dropzone-started .afb_dropzone-title {
+.afb_file_container.with_preview .afb_dropzone-started .afb_dropzone-title {
     display: none;
+}
+
+/** with preview non multiple **/
+.afb_file_container.with_preview .afb_upload_container .afb_item {
+    position: relative;
+    width: 120px;
 }
