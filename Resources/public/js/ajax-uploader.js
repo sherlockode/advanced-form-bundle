@@ -273,12 +273,6 @@ let $ = jQuery;
                     return deletePreview(element, true);
                 });
             });
-
-            container.on('click', '.afb_dropzone', function(e) {
-                if (e.currentTarget === e.target || $(e.target).hasClass('afb_upload_container') || $(e.target).hasClass('afb_dropzone-title')) {
-                    $(this).find('.afb_file_input').click();
-                }
-            });
         });
     };
 })();
