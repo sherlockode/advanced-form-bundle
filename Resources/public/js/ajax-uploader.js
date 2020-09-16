@@ -115,7 +115,7 @@ let $ = jQuery;
                     processData: false,
                     data: formData
                 }).done(function(response) {
-                    let  previewElement = $('.afb_preview_' + uploadId);
+                    let  previewElement = container.find('.afb_preview_' + uploadId);
 
                     previewElement.addClass('afb_upload_complete');
                     previewElement.removeClass('afb_upload_progressing');
