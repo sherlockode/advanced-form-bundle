@@ -2,13 +2,13 @@
     {% import _self as self %}
     <div class="afb_file_container {% if imagePreview %}with_preview{% endif %}" {{ block('data_attributes') }}
         {% with {progressBar: true, img: null, fileName:null, uploadId: null, file: null} %}
-        data-prototype="{{ block('file_info')|e }}"
+            data-prototype="{{ block('file_info')|e }}"
         {% endwith %}
     >
         {% set disabled = true %}
         {% if not form.vars.disabled %}
-            {{ block('dropzone') }}
             {% set disabled = false %}
+            {{ block('dropzone') }}
         {% endif %}
         {% if false == imagePreview or false == multiple %}
             {{ block('file_list') }}
@@ -47,7 +47,7 @@
 {% endblock %}
 
 {% block dropzone %}
-    <label for="afb_file_input-{{ id }}" class="afb_dropzone"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
+    <label for="afb_file_input-{{ id }}" class="afb_dropzone {% if files is not empty%}afb_dropzone-started{% endif %}"{% if files|length > 0 and false == multiple %} style="display:none"{% endif %}>
         <h5 class="afb_dropzone-title">{{ (dropzoneLabel ?? label)|trans({}, translation_domain) }}</h5>
         <input type="file" {% if multiple %}multiple{% endif %} class="afb_file_input" id="afb_file_input-{{ id }}"/>
 
@@ -61,19 +61,34 @@
     {% set i = 0 %}
     <ul class="afb_upload_container {% if false == imagePreview %}afb_no_preview{% endif %}">
         {% for file in files %}
-            {% set i = i + 1 %}
-            {% with {progressBar: false, img: sherlockode_afb_asset(mapping, file.id), fileName: sherlockode_afb_filename(mapping, file), uploadId: i, file: file} %}
-            {{ block('file_info') }}
-            {% endwith %}
+            {% if file.id is not null %}
+                {% set i = i + 1 %}
+                {% with {progressBar: false, img: sherlockode_afb_asset(mapping, file.id), fileName: sherlockode_afb_filename(mapping, file), uploadId: i, file: file} %}
+                    {{ block('file_info') }}
+                {% endwith %}
+            {% endif %}
         {% endfor %}
 
         {# render the tmp uploaded file form inputs (key and token) which have not been saved yet
         this will be empty in regular cases, only present on invalid forms (key/token data was just posted) #}
         {% for child in form.files|default([]) %}
-            {% if child.vars.data is not empty %}
+            {% if child.vars.data is not empty and child.vars.form.children.key is defined and child.vars.form.children.token is defined %}
+                {% set data = child.vars.data %}
+                {% set key = child.vars.form.children.key %}
+                {% set token = child.vars.form.children.token %}
                 {% set i = i + 1 %}
-                <li class="afb_item afb_preview_{{ i }}" data-upload="{{ i }}">
-                    {{ form_widget(child) }}
+                <li class="afb_item afb_preview_{{ i }}" data-upload="{{ i }}" data-tmp="{{ uploadMode == 'temporary' ? 1 : 0 }}">
+                    {% if imagePreview %}
+                        <div class="afb_file_preview">
+                            <img src="{{ sherlockode_afb_base_64_image(data) }}" alt="{{ data.getClientOriginalName }}" />
+                        </div>
+                    {% endif %}
+                    <div class="afb_filename"><span>{{ data.getClientOriginalName }}</span></div>
+                    {% if disabled is defined and not disabled %}
+                        <a class="afb_remove_file" href="#" data-upload="{{ i }}">X</a>
+                    {% endif %}
+                    <input type="hidden" name="{{ key.vars.full_name }}" value="{{ key.vars.value }}">
+                    <input type="hidden" name="{{ token.vars.full_name }}" value="{{ token.vars.value }}">
                 </li>
             {% endif %}
         {% endfor %}
@@ -89,7 +104,7 @@
         {% if imagePreview %}
             <div class="afb_file_preview">
                 {% if img is not null %}
-                    <img src="{{ img }}"/>
+                    <img src="{{ img }}" alt="{{ fileName }}"/>
                 {% endif %}
             </div>
         {% endif %}
