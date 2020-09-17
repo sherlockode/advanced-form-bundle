@@ -71,7 +71,13 @@
 
         {# render the tmp uploaded file form inputs (key and token) which have not been saved yet
         this will be empty in regular cases, only present on invalid forms (key/token data was just posted) #}
-        {% for child in form.files|default([]) %}
+        {% if multiple %}
+            {% set children = form.files|default([]) %}
+        {% else %}
+            {% set children = [form.files] %}
+        {% endif %}
+
+        {% for child in children %}
             {% if child.vars.data is not empty and child.vars.form.children.key is defined and child.vars.form.children.token is defined %}
                 {% set data = child.vars.data %}
                 {% set key = child.vars.form.children.key %}
