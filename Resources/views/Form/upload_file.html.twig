@@ -2,7 +2,7 @@
     {% import _self as self %}
     <div class="afb_file_container {% if imagePreview %}with_preview{% endif %}" {{ block('data_attributes') }}
         {% with {progressBar: true, img: null, fileName:null, uploadId: null, file: null} %}
-            data-prototype="{{ block('file_info')|e }}"
+            data-prototype="{{ block('file_info')|e('html_attr') }}"
         {% endwith %}
     >
         {% set disabled = true %}
