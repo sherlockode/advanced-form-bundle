@@ -34,14 +34,8 @@ jQuery(function ($) {
         });
         refreshList(dependOnElement.val(), element.val());
         function refreshList(key, selectedValue) {
-            if (undefined === element.attr('required')) {
-                element.children('option:not([value=""])').remove();
-                if (0 === element.find('option[value=""]').length) {
-                    element.append('<option value=""></option>');
-                }
-            } else {
-                element.children('option').remove();
-            }
+            // remove all options except the empty value (if present)
+            element.children('option:not([value=""])').remove();
 
             var ajaxUrl = element.data('dependent-ajax-url');
             if (ajaxUrl) {
