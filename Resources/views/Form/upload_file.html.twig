@@ -5,9 +5,7 @@
             data-prototype="{{ block('file_info')|e('html_attr') }}"
         {% endwith %}
     >
-        {% set disabled = true %}
-        {% if not form.vars.disabled %}
-            {% set disabled = false %}
+        {% if not disabled %}
             {{ block('dropzone') }}
         {% endif %}
         {% if false == imagePreview or false == multiple %}
@@ -90,7 +88,7 @@
                         </div>
                     {% endif %}
                     <div class="afb_filename"><span>{{ data.getClientOriginalName }}</span></div>
-                    {% if disabled is defined and not disabled %}
+                    {% if not disabled %}
                         <a class="afb_remove_file" href="#" data-upload="{{ i }}">X</a>
                     {% endif %}
                     <input type="hidden" name="{{ key.vars.full_name }}" value="{{ key.vars.value }}">
@@ -131,7 +129,7 @@
                 </svg>
             </div>
         {% endif %}
-        {% if disabled is defined and not disabled %}
+        {% if not disabled %}
             <a class="afb_remove_file" href="#" data-upload="{{ uploadId }}" data-id="{{ dataId }}">X</a>
         {% endif %}
     </li>
