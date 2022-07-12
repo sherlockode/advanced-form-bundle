@@ -1,3 +1,0 @@
-sherlockode_afb_dependent_results:
-    path: /sherlockodeadvancedform/dependent-result
-    defaults: { _controller: sherlockode_afb.dependent_entity.controller:getDependentResultsAction }

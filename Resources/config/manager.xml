@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="sherlockode_afb.upload_handler.vich" class="Sherlockode\AdvancedFormBundle\UploadHandler\VichUploadHandler">
+            <argument type="service" id="vich_uploader.upload_handler"/>
+            <argument type="service" id="annotation_reader"/>
+            <tag name="sherlockode_afb.upload_handler" alias="vich"/>
+        </service>
+        <service id="sherlockode_afb.upload_handler.property" class="Sherlockode\AdvancedFormBundle\UploadHandler\PropertyUploadHandler">
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <argument/>
+            <tag name="sherlockode_afb.upload_handler" alias="property"/>
+        </service>
+        <service id="sherlockode_afb.upload_manager" class="Sherlockode\AdvancedFormBundle\Manager\UploadManager">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sherlockode_afb.storage.tmp_storage"/>
+            <argument>%sherlockode_afb.tmp_uploaded_file_class%</argument>
+        </service>
+        <service id="sherlockode_afb.mapping_manager" class="Sherlockode\AdvancedFormBundle\Manager\MappingManager">
+            <call method="setMappingData">
+                <argument>%sherlockode_afb.uploader_mappings%</argument>
+            </call>
+        </service>
+        <service id="sherlockode_afb.storage.tmp_storage" class="Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage">
+            <argument>%sherlockode_afb.tmp_uploaded_file_dir%</argument>
+        </service>
+        <service id="sherlockode_afb.twig_extension" class="Sherlockode\AdvancedFormBundle\Twig\Extension\UploaderExtension">
+            <argument type="service" id="router"/>
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <argument type="service" id="sherlockode_afb.upload_manager"/>
+            <tag name="twig.extension"/>
+        </service>
+        <service id="sherlockode_afb.dependent_entity.mapper_pool" class="Sherlockode\AdvancedFormBundle\DependentEntity\DependentMapperPool">
+        </service>
+    </services>
+</container>
