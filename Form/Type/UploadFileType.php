@@ -115,7 +115,7 @@ class UploadFileType extends AbstractType
     /**
      * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'afb_upload_file';
     }

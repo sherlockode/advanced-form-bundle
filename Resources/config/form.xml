@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="sherlockode_afb.file.form_entity_type" class="Sherlockode\AdvancedFormBundle\Form\Type\EntityMappingType">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <tag name="form.type"/>
+        </service>
+        <service id="sherlockode_afb.file.form_type" class="Sherlockode\AdvancedFormBundle\Form\Type\FileType">
+            <argument type="service" id="router"/>
+            <argument type="service" id="sherlockode_afb.upload_manager"/>
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <argument>%sherlockode_afb.tmp_uploaded_file_dir%</argument>
+            <tag name="form.type"/>
+        </service>
+        <service id="sherlockode_afb.file.collection_type" class="Sherlockode\AdvancedFormBundle\Form\Type\FileCollectionType">
+            <tag name="form.type"/>
+        </service>
+        <service id="sherlockode_afb.file.tmp_type" class="Sherlockode\AdvancedFormBundle\Form\Type\TemporaryUploadedFileType">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%sherlockode_afb.tmp_uploaded_file_class%</argument>
+            <tag name="form.type"/>
+        </service>
+        <service id="sherlockode_afb.file.upload_type" class="Sherlockode\AdvancedFormBundle\Form\Type\UploadFileType">
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <argument type="service" id="translator"/>
+            <tag name="form.type"/>
+        </service>
+        <service id="sherlockode_afb.form.dependent_entity_type" class="Sherlockode\AdvancedFormBundle\Form\Type\DependentEntityType">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="sherlockode_afb.dependent_entity.mapper_pool"/>
+            <argument type="service" id="router"/>
+            <tag name="form.type"/>
+        </service>
+    </services>
+</container>

@@ -76,7 +76,7 @@ class TemporaryUploadedFileType extends AbstractType
     /**
      * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'afb_temporary_uploaded_file';
     }

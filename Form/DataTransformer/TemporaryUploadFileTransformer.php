@@ -65,7 +65,6 @@ class TemporaryUploadFileTransformer implements DataTransformerInterface
             $data->getFilename(),
             null,
             null,
-            null,
             true
         );
     }

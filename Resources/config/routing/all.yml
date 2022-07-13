@@ -1,4 +1,0 @@
-sherlockode_afb.dependent_entity:
-    resource: './dependent_entity.yml'
-sherlockode_afb.file_upload:
-    resource: './upload.yml'

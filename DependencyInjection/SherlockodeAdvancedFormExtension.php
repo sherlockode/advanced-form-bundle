@@ -7,7 +7,7 @@ use Sherlockode\AdvancedFormBundle\Storage\FilesystemStorage;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -76,12 +76,12 @@ class SherlockodeAdvancedFormExtension extends Extension
      */
     private function loadServices(ContainerBuilder $container)
     {
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $toBeLoaded = [
-            'command.yml',
-            'controller.yml',
-            'form.yml',
-            'manager.yml',
+            'command.xml',
+            'controller.xml',
+            'form.xml',
+            'manager.xml',
         ];
         foreach ($toBeLoaded as $file) {
             $loader->load($file);

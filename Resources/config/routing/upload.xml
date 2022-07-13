@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd"
+>
+    <route id="sherlockode_afb_upload" path="/sherlockodeadvancedform/upload">
+        <default key="_controller">sherlockode_afb.file_upload.controller:uploadFileAction</default>
+    </route>
+    <route id="sherlockode_afb_remove" path="/sherlockodeadvancedform/remove">
+        <default key="_controller">sherlockode_afb.file_upload.controller:removeFileAction</default>
+    </route>
+    <route id="sherlockode_afb_upload_tmp" path="/sherlockodeadvancedform/upload_tmp">
+        <default key="_controller">sherlockode_afb.file_upload.temporary_upload_controller:uploadTmpAction</default>
+    </route>
+    <route id="sherlockode_afb_remove_tmp" path="/sherlockodeadvancedform/remove_tmp">
+        <default key="_controller">sherlockode_afb.file_upload.temporary_upload_controller:removeTmpFileAction</default>
+    </route>
+    <route id="sherlockode_afb_preview" path="/sherlockodeadvancedform/uploaded/{token}">
+        <default key="_controller">sherlockode_afb.file_upload.temporary_upload_controller:viewUploadedFileAction</default>
+    </route>
+</routes>

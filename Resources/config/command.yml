@@ -1,8 +1,0 @@
-services:
-    sherlockode_afb.command.remove_tmp_files:
-        class: Sherlockode\AdvancedFormBundle\Command\RemoveTemporaryFileCommand
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@sherlockode_afb.storage.tmp_storage'
-            - '%sherlockode_afb.tmp_uploaded_file_class%'
-        tags: ['console.command']

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd"
+>
+    <services>
+        <service id="sherlockode_afb.file_upload.controller" class="Sherlockode\AdvancedFormBundle\Controller\FileUploadController" public="true">
+            <argument type="service" id="sherlockode_afb.upload_manager"/>
+            <argument type="service" id="sherlockode_afb.mapping_manager"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="event_dispatcher"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="sherlockode_afb.file_upload.temporary_upload_controller" class="Sherlockode\AdvancedFormBundle\Controller\TemporaryFileUploadController" public="true">
+            <argument type="service" id="sherlockode_afb.upload_manager"/>
+            <argument>%sherlockode_afb.tmp_uploaded_file_class%</argument>
+            <argument type="service" id="sherlockode_afb.storage.tmp_storage"/>
+            <argument type="service" id="event_dispatcher"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="sherlockode_afb.dependent_entity.controller" class="Sherlockode\AdvancedFormBundle\Controller\DependentEntityController" public="true">
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="sherlockode_afb.dependent_entity.mapper_pool"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+    </services>
+</container>
