@@ -68,7 +68,7 @@ class UserBookMapper implements DependentEntityMapperInterface
 
     public function getName()
     {
-        return 'client_order_sheet';
+        return 'user_books';
     }
 
     public function getSubjectClass()
